@@ -32,8 +32,6 @@ public class NativeQueryGenerator {
         this.hierarchyInfo = hierarchyInfo;
     }
 
-    
-    
     public void setDimensions(List<Dimension> dimensions) {
         this.dimensions = dimensions;
     }
@@ -41,15 +39,13 @@ public class NativeQueryGenerator {
     public void setHierarchyInfo(int[][] hierarchyInfo) {
         this.hierarchyInfo = hierarchyInfo;
     }
-    
-    
 
-    private List cartesianProduct(List list1, List list2) {
-        List result = new ArrayList<>();
-        for (Object sb1 : list1) {
-            for (Object sb2 : list2) {
-                StringBuilder newStringBuilder = new StringBuilder(((StringBuilder) sb1).toString());
-                newStringBuilder.append(":").append(((StringBuilder) sb2).toString());
+    private List<StringBuilder> cartesianProduct(List<StringBuilder> list1, List<StringBuilder> list2) {
+        List<StringBuilder> result = new ArrayList<>();
+        for (StringBuilder sb1 : list1) {
+            for (StringBuilder sb2 : list2) {
+                StringBuilder newStringBuilder = new StringBuilder(sb1.toString());
+                newStringBuilder.append(":").append(sb2.toString());
                 result.add(newStringBuilder);
             }
         }
@@ -61,10 +57,10 @@ public class NativeQueryGenerator {
         int drillVectorLength = drillVector.length;
 
         //ebben a tömben annyi lista lesz, ahány eleme van a drillVectornak
-        List[] childrenList = new List[drillVectorLength];
+        List<StringBuilder>[] childrenList = new ArrayList[drillVectorLength];
 
         for (int i = 0; i < drillVectorLength; i++) {
-            List children = new ArrayList();
+            List<StringBuilder> children = new ArrayList<>();
             String oldPath = baseVector[i];
             StringBuilder tempPath = new StringBuilder();
            
@@ -78,14 +74,10 @@ public class NativeQueryGenerator {
                 Dimension dimension = (Dimension) this.dimensions.get(dimIdx);
                 
                 if (dimension != null) {
-//                    System.out.println("dims nem üress: " + dimension.getUniqueName());
-//                    Node member = null;
-
                     if (oldPath != null) {
                          Node node = dimension.getNode(hierarchyIdx, oldPath);
                         if (node.isLeaf()) {
                             tempPath.append(oldPath);
-//                System.out.println("oldPath: " + oldPath);
                             children.add(tempPath);
 
                         //ha nem levélelemről van szó, akkor lefúrunk a gyerekekre
@@ -98,7 +90,6 @@ public class NativeQueryGenerator {
                             for (int childId : childrenId) {
                                 StringBuilder sb = new StringBuilder(tempPath.toString());
                                 sb.append(childId);
-//                                System.out.println("gyerekId: "+sb.toString());
                                 children.add(sb);
                             }
                         }
@@ -109,13 +100,12 @@ public class NativeQueryGenerator {
             else {
                 //a régi path-t átmásoljuk
                 tempPath.append(oldPath);
-//                System.out.println("oldPath: " + oldPath);
                 children.add(tempPath);
 
             }
             childrenList[i] = children;
         }
-        List list1 = childrenList[0];
+        List<StringBuilder> list1 = childrenList[0];
         for (int i = 1; i < childrenList.length; i++) {
             list1 = this.cartesianProduct(list1, childrenList[i]);
         }
@@ -123,7 +113,7 @@ public class NativeQueryGenerator {
         if (list1Size > 0) {
             result = new String[list1Size];
             for (int i = 0; i < list1Size; i++) {
-                result[i] = ((StringBuilder) list1.get(i)).toString();
+                result[i] = list1.get(i).toString();
 
             }
         }

@@ -21,14 +21,12 @@ import java.util.logging.Logger;
  */
 public class DataRetriever {
 
-    private List<Problem> problems;
-//    private double[][] facts;
-    private Cube cube;
-    private List<Callable<ResultElement>> tasks;
+    private final List<Problem> problems;
+    private final Cube cube;
+    private final List<Callable<ResultElement>> tasks;
     private final int numberOfProcessors;
 
     public DataRetriever(Cube cube) {
-//        this.facts = facts;
         this.cube = cube;
         this.problems = new ArrayList<>();
         this.tasks = new ArrayList<>();
@@ -46,49 +44,21 @@ public class DataRetriever {
     }
 
     public void addProblem(Problem problem) {
-        Callable<ResultElement> c = new Callable<ResultElement>() {
-            @Override
-            public ResultElement call() throws Exception {
-//                Runtime.getRuntime().gc();
-//                System.out.println("Free after runs: " + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " Mbyte");
-                return problem.compute(cube);
-                
-            }
-        };
+        Callable<ResultElement> c = () -> problem.compute(cube);
         this.tasks.add(c);
         this.problems.add(problem);
     }
 
    
     public List<Future<ResultElement>> computeAll() {
-        
-//        System.out.println("Itt vagyok meghívva");
-//        
-//        System.out.println("Problems: " + this.problems.size());
-//        for(Problem p : this.problems){
-//            System.out.println(p.toString());
-//        }
-        
-        //ExecutorService exec = Executors.newCachedThreadPool();
-        // some other exectuors you could try to see the different behaviours
         ExecutorService exec = Executors.newFixedThreadPool(numberOfProcessors);
-        //ExecutorService exec = Executors.newFixedThreadPool(4);
-        //ExecutorService exec = Executors.newSingleThreadExecutor();
         List<Future<ResultElement>> results = null;
         try {
-
-//            long begin = System.nanoTime();
             results = exec.invokeAll(tasks);
-
-//            long duration = (System.nanoTime() - begin) / 1000000;
-//            System.out.println(String.format("Elapsed time: %d ms", duration) + "  " + results.size());
-
         } catch (InterruptedException ex) {
             Logger.getLogger(DataRetriever.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             exec.shutdown();
-//          System.out.println("Free after runs: " + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " Mbyte");
-            
         }
         return results;
     }

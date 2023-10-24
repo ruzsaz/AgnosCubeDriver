@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver.zolikaokos;
 
 import gnu.trove.list.array.TIntArrayList;
@@ -13,7 +8,6 @@ import java.util.Arrays;
  * @author ruzsaz
  */
 public class Algorithms {
-
 
     /**
      * Kikeres egy értéket a rendezett tömbből. Ha nincs benne, akkor a nálánál

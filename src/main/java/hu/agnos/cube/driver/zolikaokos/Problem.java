@@ -1,22 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver.zolikaokos;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.molap.Cube;
 import hu.agnos.molap.dimension.Dimension;
 import hu.agnos.molap.dimension.Hierarchy;
 import hu.agnos.molap.dimension.Node;
-import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.molap.measure.AbstractMeasure;
 import hu.agnos.molap.measure.CalculatedMeasure;
 import hu.agnos.molap.measure.Measures;
-import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  *
@@ -25,7 +19,7 @@ import java.util.List;
 public class Problem {
 
     public int[][] Oa, Ob, a, b;
-    private int drillVectorId;
+    private final int drillVectorId;
     private String[] header;
     private final String baseVector;
 
@@ -147,7 +141,6 @@ public class Problem {
         int measureCnt = measures.getMeasures().size();
         double[] result = new double[measureCnt];
 
-        int[] calculatedMeasureFlags = new int[measureCnt];
         for (int i = 0; i < measureCnt; i++) {
             AbstractMeasure member = measures.getMember(i);
 
@@ -155,11 +148,11 @@ public class Problem {
                 String calculatedFormula = ((CalculatedMeasure) member).getFormula();
                 String[] formulaWithIndex = replaceMeasurUniqeNameToIndex(calculatedFormula, measures);
                 PostfixCalculator calculator = new PostfixCalculator();
-                Double d = calculator.calculate(formulaWithIndex, measureValues);
+                double d = calculator.calculate(formulaWithIndex, measureValues);
                 result[i] = d;
             } else {
-                String memberUniqeName = member.getName();
-                int idx = measures.getRealMeasureIdxByUniquName(memberUniqeName);
+                String memberUniqueName = member.getName();
+                int idx = measures.getRealMeasureIdxByUniquName(memberUniqueName);
                 result[i] = measureValues[idx];
             }
         }
@@ -173,7 +166,7 @@ public class Problem {
      * @param calculatedFormula az átalakítandó formula
      * @return ez eredeti formulanak egy olyan változata, amely split-elve van
      * szőközönként és a measure nevek helyett azok indexei található
-     * @throws NumberFormatException
+     * @throws NumberFormatException ha valami rosszul van formázva
      */
     private String[] replaceMeasurUniqeNameToIndex(String calculatedFormula, Measures measures) throws NumberFormatException {
         String[] calculatedFormulaSegments = calculatedFormula.split(" ");
@@ -185,8 +178,8 @@ public class Problem {
             } else {
                 int idx = measures.getRealMeasureIdxByUniquName(calculatedFormulaSegments[i]);
                 if (idx == -1) {
-                    Double d = Double.parseDouble(calculatedFormulaSegments[i]);
-                    result[i] = d.toString();
+                    double d = Double.parseDouble(calculatedFormulaSegments[i]);
+                    result[i] = Double.toString(d);
                 } else {
                     result[i] = Integer.toString(idx);
                 }

@@ -9,7 +9,6 @@ public class ResultElement {
 
     private final String[] header;
     private final int drillVectorId;
-
     private final double[] measureValues;
 
     public ResultElement(String[] header, double[] measureValues, int drillVectorId) {
@@ -56,14 +55,10 @@ public class ResultElement {
 
     public ResultElement deepCopy() {
         String[] tempHeader = new String[header.length];
-        for (int i = 0; i < header.length; i++) {
-            tempHeader[i] = header[i];
-        }
+        System.arraycopy(header, 0, tempHeader, 0, header.length);
 
         double[] tempMeasureValues = new double[measureValues.length];
-        for (int i = 0; i < measureValues.length; i++) {
-            tempMeasureValues[i] = measureValues[i];
-        }
+        System.arraycopy(measureValues, 0, tempMeasureValues, 0, measureValues.length);
 
         return new ResultElement(tempHeader, tempMeasureValues, drillVectorId);
     }

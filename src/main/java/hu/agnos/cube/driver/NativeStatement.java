@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver;
 
 import hu.agnos.molap.Cube;
@@ -10,6 +5,7 @@ import hu.agnos.cube.driver.zolikaokos.DataRetriever;
 import hu.agnos.cube.driver.zolikaokos.Problem;
 import hu.agnos.cube.driver.zolikaokos.ResultElement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -22,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class NativeStatement {
 
-    private Cube cube;
+    private final Cube cube;
 
     public NativeStatement(Cube cube) {
         this.cube = cube;
@@ -40,7 +36,7 @@ public class NativeStatement {
             String[] newBaseVectorArray = null;
             String drillVector = drillVectors[i];
             
-            resultSet[i] = new ResultSet(drillVector);
+            resultSet[i] = new ResultSet(cube.getName(), Arrays.asList(cube.getMeasures().getHeader()), drillVector);
             
             if (drillVector != null) {
                 String[] baseVectorArray = baseVector.split(":", -1);
@@ -65,26 +61,17 @@ public class NativeStatement {
             List<ResultElement> temp = new ArrayList<>();
             eredmeny.add(temp);
         }
-        
-         
-        
-        
-        for(int i = 0; i < futures.size(); i++){
-             try {
-                 
-                    ResultElement r = futures.get(i).get();
-//                    for(String s : r.getHeader()){
-//                        System.out.print(s + ", ");
-//                    }
-//                    System.out.println("");
-                    int drillVectorId = r.getDrillVectorId();
-                    List<ResultElement> temp = eredmeny.get(drillVectorId);
-                    temp.add(r);                    
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ExecutionException ex) {
-                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
-                }
+
+
+        for (Future<ResultElement> future : futures) {
+            try {
+                ResultElement r = future.get();
+                int drillVectorId = r.getDrillVectorId();
+                List<ResultElement> temp = eredmeny.get(drillVectorId);
+                temp.add(r);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
       
@@ -94,48 +81,43 @@ public class NativeStatement {
         
         return resultSet;
     }
-
-    public ResultSet executeQuery(String baseVector, String drillVector) {
-        ResultSet resultSet = null;
-        String[] newBaseVectorArray = null;
-
-        if (drillVector != null) {
-            String[] baseVectorArray = baseVector.split(":", -1);
-            String[] drillVectorArray = drillVector.split(":", -1);
-            NativeQueryGenerator queryGenerator = new NativeQueryGenerator(cube.getDimensions(), cube.getHierarchyIndex());
-
-            newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, drillVectorArray);
-
-        }
-
-        if (newBaseVectorArray != null) {
-            resultSet = new ResultSet(drillVector);
-            ResultElement[] response = null;
-            int rowCnt = newBaseVectorArray.length;
-
-            DataRetriever retriever = new DataRetriever(cube);
-            for (int i = 0; i < rowCnt; i++) {
-                retriever.addProblem(new Problem(0, newBaseVectorArray[i]));
-            }
-
-            List<Future<ResultElement>> futures = retriever.computeAll();
-
-            response = new ResultElement[rowCnt];
-
-            for (int i = 0; i < rowCnt; i++) {
-                try {
-                    response[i] = futures.get(i).get();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ExecutionException ex) {
-                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-//            resultSet.setResponse(response);
-
-        }
-        return resultSet;
-    }
+//
+//    public ResultSet executeQuery(String baseVector, String drillVector) {
+//        ResultSet resultSet = null;
+//        String[] newBaseVectorArray = null;
+//
+//        if (drillVector != null) {
+//            String[] baseVectorArray = baseVector.split(":", -1);
+//            String[] drillVectorArray = drillVector.split(":", -1);
+//            NativeQueryGenerator queryGenerator = new NativeQueryGenerator(cube.getDimensions(), cube.getHierarchyIndex());
+//
+//            newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, drillVectorArray);
+//
+//        }
+//
+//        if (newBaseVectorArray != null) {
+//            resultSet = new ResultSet(cube.getName(), Arrays.asList(cube.getMeasures().getHeader()), drillVector);
+//            ResultElement[] response = null;
+//            int rowCnt = newBaseVectorArray.length;
+//
+//            DataRetriever retriever = new DataRetriever(cube);
+//            for (int i = 0; i < rowCnt; i++) {
+//                retriever.addProblem(new Problem(0, newBaseVectorArray[i]));
+//            }
+//
+//            List<Future<ResultElement>> futures = retriever.computeAll();
+//
+//            response = new ResultElement[rowCnt];
+//
+//            for (int i = 0; i < rowCnt; i++) {
+//                try {
+//                    response[i] = futures.get(i).get();
+//                } catch (InterruptedException | ExecutionException ex) {
+//                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+//        return resultSet;
+//    }
 
 }

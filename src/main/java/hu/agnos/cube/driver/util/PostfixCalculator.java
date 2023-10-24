@@ -48,13 +48,13 @@ public class PostfixCalculator {
             if (inputs[i].equals(ADD) || inputs[i].equals(SUB) || inputs[i].equals(MUL) || inputs[i].equals(DIV) || inputs[i].equals(SQU) || inputs[i].equals(ABS)) {
                 outputs[i] = inputs[i];
             } else if (inputs[i].contains(".")) {
-                Double d = Double.parseDouble(inputs[i]);
-                outputs[i] = d.toString();
+                double d = Double.parseDouble(inputs[i]);
+                outputs[i] = Double.toString(d);
 
             } else {
                 int idx = Integer.parseInt(inputs[i]);
-                Double d = measures[idx];
-                outputs[i] = d.toString();
+                double d = measures[idx];
+                outputs[i] = Double.toString(d);
             }
         }
         return outputs;
@@ -62,75 +62,69 @@ public class PostfixCalculator {
 
     private double handleCalculation(String[] el) {
         double operand1, operand2, operand3;
-        Stack<Double> stack = new Stack();
-        for (int i = 0; i < el.length; i++) {
-            if (el[i].equals(ADD) || el[i].equals(SUB) || el[i].equals(MUL) || el[i].equals(DIV)) {
-                operand2 = stack.pop();
-                operand1 = stack.pop();
-                switch (el[i]) {
-                    case ADD: {
-                        double local = operand1 + operand2;
-                        stack.push(local);
-                        break;
-                    }
-
-                    case SUB: {
-                        double local = operand1 - operand2;
-                        stack.push(local);
-                        break;
-                    }
-
-                    case MUL: {
-                        double local = operand1 * operand2;
-                        stack.push(local);
-                        break;
-                    }
-
-                    case DIV: {
-                        double local;
-                        if (operand2 == 0) {
-                            local = 0;
-                        } else {
-                            local = operand1 / operand2;
-                        }
-                        stack.push(local);
-                        break;
-                    }
+        Stack<Double> stack = new Stack<>();
+        for (String s : el) {
+            switch (s) {
+                case ADD:  {
+                    operand2 = stack.pop();
+                    operand1 = stack.pop();
+                    double local = operand1 + operand2;
+                    stack.push(local);
+                    break;
                 }
-            } else if (el[i].equals(SQU) || el[i].equals(ABS)) {
-                operand1 = stack.pop();
-                switch (el[i]) {
-                    case SQU: {
-                        double local = operand1 * operand1;
-                        stack.push(local);
-                        break;
-                    }
-                    case ABS: {
-                        double local;
-                        if (operand1 < 0) {
-                            local = operand1 * -1;
-                        } else {
-                            local = operand1;
-                        }
-                        stack.push(local);
-                        break;
-                    }
+                case SUB: {
+                    operand2 = stack.pop();
+                    operand1 = stack.pop();
+                    double local = operand1 - operand2;
+                    stack.push(local);
+                    break;
                 }
-
-            } else if (el[i].equals(IS_ZERO)) {
-                operand3 = stack.pop();
-                operand2 = stack.pop();
-                operand1 = stack.pop();
-                switch (el[i]) {
-                    case IS_ZERO: {
-
-                        double local = (operand1 == 0) ? operand2 : operand3;
-                        stack.push(local);
-                        break;
-                    }
+                case MUL: {
+                    operand2 = stack.pop();
+                    operand1 = stack.pop();
+                    double local = operand1 * operand2;
+                    stack.push(local);
+                    break;
                 }
-            } else {
-                stack.push(Double.parseDouble(el[i]));
+                case DIV:  {
+                    operand2 = stack.pop();
+                    operand1 = stack.pop();
+                    double local;
+                    if (operand2 == 0) {
+                        local = 0;
+                    } else {
+                        local = operand1 / operand2;
+                    }
+                    stack.push(local);
+                    break;
+                }
+                case SQU: {
+                    operand1 = stack.pop();
+                    double local = operand1 * operand1;
+                    stack.push(local);
+                    break;
+                }
+                case ABS:  {
+                    operand1 = stack.pop();
+                    double local;
+                    if (operand1 < 0) {
+                        local = operand1 * -1;
+                    } else {
+                        local = operand1;
+                    }
+                    stack.push(local);
+                    break;
+                }
+                case IS_ZERO:
+                    operand3 = stack.pop();
+                    operand2 = stack.pop();
+                    operand1 = stack.pop();
+                    double local = (operand1 == 0) ? operand2 : operand3;
+                    stack.push(local);
+                    break;
+                default:
+                    stack.push(Double.parseDouble(s));
+                    break;
             }
         }
 
