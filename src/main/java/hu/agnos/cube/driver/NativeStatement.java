@@ -1,6 +1,7 @@
 package hu.agnos.cube.driver;
 
-import hu.agnos.molap.Cube;
+import hu.agnos.cube.Cube;
+import hu.agnos.cube.dimension.Node;
 import hu.agnos.cube.driver.zolikaokos.DataRetriever;
 import hu.agnos.cube.driver.zolikaokos.Problem;
 import hu.agnos.cube.driver.zolikaokos.ResultElement;
@@ -24,15 +25,14 @@ public class NativeStatement {
         this.cube = cube;
     }
 
-
     public ResultSet[] executeQueries(String baseVector, String[] drillVectors) {
         int drillVectorsSize = drillVectors.length;
 
         ResultSet[] resultSet = new ResultSet[drillVectorsSize];        
-        DataRetriever retriever = new DataRetriever(cube);
+        DataRetriever retriever = new DataRetriever();
 
         for (int i = 0; i < drillVectors.length; i++) {
-            String[] newBaseVectorArray = null;
+            List<List<Node>> newBaseVectorArray = null;
             String drillVector = drillVectors[i];
             
             resultSet[i] = new ResultSet(cube.getName(), Arrays.asList(cube.getMeasures().getHeader()), drillVector);
@@ -40,15 +40,13 @@ public class NativeStatement {
             if (drillVector != null) {
                 String[] baseVectorArray = baseVector.split(":", -1);
                 String[] drillVectorArray = drillVector.split(":", -1);
-                NativeQueryGenerator queryGenerator = new NativeQueryGenerator(cube.getDimensions(), cube.getHierarchyIndex());
-                String[] baseVectorArrayAsIds = queryGenerator.convertIdBaseVectorFromKnowIdBaseVector(baseVectorArray);
-                newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, baseVectorArrayAsIds, drillVectorArray);
+                newBaseVectorArray = QueryGenerator.getCoordinatesOfDrill(cube.getDimensions(), baseVectorArray, drillVectorArray);
             }
 
             if (newBaseVectorArray != null) {
-                int rowCnt = newBaseVectorArray.length;
-                for (int j = 0; j < rowCnt; j++) {
-                    retriever.addProblem(new Problem(i, newBaseVectorArray[j]));
+                int rowCnt = newBaseVectorArray.size();
+                for (List<Node> nodes : newBaseVectorArray) {
+                    retriever.addProblem(new Problem(cube, i, nodes));
                 }
             }
         }
@@ -80,44 +78,5 @@ public class NativeStatement {
         
         return resultSet;
     }
-
-//
-//    public ResultSet executeQuery(String baseVector, String drillVector) {
-//        ResultSet resultSet = null;
-//        String[] newBaseVectorArray = null;
-//
-//        if (drillVector != null) {
-//            String[] baseVectorArray = baseVector.split(":", -1);
-//            String[] drillVectorArray = drillVector.split(":", -1);
-//            NativeQueryGenerator queryGenerator = new NativeQueryGenerator(cube.getDimensions(), cube.getHierarchyIndex());
-//
-//            newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, drillVectorArray);
-//
-//        }
-//
-//        if (newBaseVectorArray != null) {
-//            resultSet = new ResultSet(cube.getName(), Arrays.asList(cube.getMeasures().getHeader()), drillVector);
-//            ResultElement[] response = null;
-//            int rowCnt = newBaseVectorArray.length;
-//
-//            DataRetriever retriever = new DataRetriever(cube);
-//            for (int i = 0; i < rowCnt; i++) {
-//                retriever.addProblem(new Problem(0, newBaseVectorArray[i]));
-//            }
-//
-//            List<Future<ResultElement>> futures = retriever.computeAll();
-//
-//            response = new ResultElement[rowCnt];
-//
-//            for (int i = 0; i < rowCnt; i++) {
-//                try {
-//                    response[i] = futures.get(i).get();
-//                } catch (InterruptedException | ExecutionException ex) {
-//                    Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        }
-//        return resultSet;
-//    }
 
 }

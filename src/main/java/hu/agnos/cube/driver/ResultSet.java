@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver;
 
 import hu.agnos.cube.driver.zolikaokos.ResultElement;
@@ -30,14 +25,6 @@ public class ResultSet implements java.io.Serializable {
     private String cubeName;
     private List<String> measures;
 
-    public ResultSet(String name) {
-        this.name = name;
-        this.originalName = new ArrayList<>();
-        this.response = new ArrayList<>();
-        this.cubeName = "";
-        this.measures = new ArrayList<>();
-    }
-
     public ResultSet(String cubeName, List<String> measures, String name) {
         this.name = name;
         this.originalName = new ArrayList<>();
@@ -45,11 +32,6 @@ public class ResultSet implements java.io.Serializable {
         this.cubeName = cubeName;
         this.measures = measures;
     }
-
-
-//    public void addResponse(ResultElement result) {
-//        this.response.add(result);
-//    }
 
     @Override
     public String toString() {

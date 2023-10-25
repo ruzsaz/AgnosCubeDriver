@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.agnos.cube.driver.util.PostfixCalculator;
-import hu.agnos.molap.Cube;
-import hu.agnos.molap.dimension.DimValue;
-import hu.agnos.molap.dimension.Dimension;
-import hu.agnos.molap.dimension.Hierarchy;
-import hu.agnos.molap.dimension.Node;
-import hu.agnos.molap.measure.AbstractMeasure;
-import hu.agnos.molap.measure.CalculatedMeasure;
-import hu.agnos.molap.measure.Measures;
+import hu.agnos.cube.Cube;
+import hu.agnos.cube.dimension.Dimension;
+import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.measure.AbstractMeasure;
+import hu.agnos.cube.measure.CalculatedMeasure;
+import hu.agnos.cube.measure.Measures;
 
 /**
  *
@@ -19,18 +17,20 @@ import hu.agnos.molap.measure.Measures;
  */
 public class Problem {
 
-    public int[][] Oa, Ob, a, b;
+    private final Cube cube;
+    protected int[][] Oa, Ob, a, b;
     private final int drillVectorId;
-    private DimValue[] header;
-    private final String baseVector;
+    private Node[] header;
+    private final List<Node> baseVector;
 
-    public Problem(int drillVectorId, String baseVector) {
+    public Problem(Cube cube, int drillVectorId, List<Node> baseVector) {
+        this.cube = cube;
         this.drillVectorId = drillVectorId;
         this.baseVector = baseVector;
     }
 
-    public ResultElement compute(Cube cube) {
-        uploadIntervalAndHeader(cube.getDimensions(), cube.getHierarchyHeader().length, cube.getHierarchyIndex());
+    public ResultElement compute() {
+        uploadIntervalAndHeader(cube.getDimensions());
         double[] calculatedValues = Algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
         double[] measureValues = getAllMeasureAsString(calculatedValues, cube.getMeasures());
         return new ResultElement(header, measureValues, drillVectorId);
@@ -41,15 +41,10 @@ public class Problem {
      * Mivel az intervallumok feltöltéséhez a Nodokat ki kell keresni, 
      * így célszerű ebben a lépésben a headert is kitölteni (különben újból ki kell keresni a nodot).
      * @param dimensions a kockában lévő dimenziók listája
-     * @param hierarchySize a kockában lévő hierarchiák száma
-     * @param hierarchyIndex egy olyan mátrix amelyben az első dimenzió elemszáma megegyezik a hierarchiák számával
-     *      a második dimenzió pedig megmondja, hogy az adott sorszámú hierarchia a kocka melyik dimenziójába, 
-     *      és dimenzión belül melyik hierarchiába esik.
      */
-    private void uploadIntervalAndHeader(List<Dimension> dimensions, int hierarchySize, int[][] hierarchyIndex) {
-        String[] baseVectorArray = baseVector.split(":", -1);
-
-        this.header = new DimValue[hierarchySize];
+    private void uploadIntervalAndHeader(List<Dimension> dimensions) {
+        int hierarchySize = dimensions.size();
+        this.header = new Node[hierarchySize];
 
         List< int[]> OaList = new ArrayList<>();
         List< int[]> ObList = new ArrayList<>();
@@ -57,40 +52,17 @@ public class Problem {
         List< int[]> bList = new ArrayList<>();
 
         for (int i = 0; i < hierarchySize; i++) {
+            Dimension dimension = dimensions.get(i);
+            Node n = baseVector.get(i);
 
-            int dimIdx = hierarchyIndex[i][0];
-            int hierIdx = hierarchyIndex[i][1];
-
-            Dimension dimension = dimensions.get(dimIdx);
-            Hierarchy hierarchy = dimension.getHierarchyById(hierIdx);
-            Node hierarchyNode = null;
-            if (baseVectorArray[i] != null && !baseVectorArray[i].isEmpty()) {
-                String[] splitedNodePath = baseVectorArray[i].split(",");
-
-                int depth = splitedNodePath.length;
-
-                int huntedNodeId = Integer.parseInt(splitedNodePath[depth - 1]);
-
-                //base level szinten vagyunk?
-                if (depth == hierarchy.getMaxDepth()) {
-                    hierarchyNode = dimension.getBaseLevelNodes()[huntedNodeId];
-                } else {
-                    hierarchyNode = hierarchy.getNode(depth, huntedNodeId);
-                }
-
+            this.header[i] = baseVector.get(i);
+            if (dimension.isOfflineCalculated()) {
+                OaList.add(n.getIntervalsLowerIndexes());
+                ObList.add(n.getIntervalsUpperIndexes());
             } else {
-                hierarchyNode = hierarchy.getRoot();
+                aList.add(n.getIntervalsLowerIndexes());
+                bList.add(n.getIntervalsUpperIndexes());
             }
-            this.header[i] = hierarchyNode.getDataAsDimValue();
-
-            if (hierarchy.isPartitioned()) {
-                OaList.add(hierarchyNode.getIntervalsLowerIndexes());
-                ObList.add(hierarchyNode.getIntervalsUpperIndexes());
-            } else {
-                aList.add(hierarchyNode.getIntervalsLowerIndexes());
-                bList.add(hierarchyNode.getIntervalsUpperIndexes());
-            }
-
         }
 
         int OaSize = OaList.size();
@@ -126,28 +98,27 @@ public class Problem {
      * meghatározott sorrendbe kell rendezni és végezetül a double értékeket
      * vesszővel szeparált String értékekre kell alakítani.
      *
-     * @param measureValues valós measure-ök tömbje
+     * @param rawValues valós measure-ök tömbje
      * @return a megkonstruált szting tömb, amelyben minden measure megfelelő
      * sorrendben szerepel.
      */
-    private double[] getAllMeasureAsString(double[] measureValues, Measures measures) {
+    private double[] getAllMeasureAsString(double[] rawValues, Measures measures) {
 
         int measureCnt = measures.getMeasures().size();
         double[] result = new double[measureCnt];
 
         for (int i = 0; i < measureCnt; i++) {
-            AbstractMeasure member = measures.getMember(i);
+            AbstractMeasure member = measures.getMeasures().get(i);
 
             if (member.isCalculatedMember()) {
                 String calculatedFormula = ((CalculatedMeasure) member).getFormula();
-                String[] formulaWithIndex = replaceMeasurUniqeNameToIndex(calculatedFormula, measures);
-                PostfixCalculator calculator = new PostfixCalculator();
-                double d = calculator.calculate(formulaWithIndex, measureValues);
+                String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula, measures);
+                double d = PostfixCalculator.calculate(formulaWithIndex, rawValues);
                 result[i] = d;
             } else {
                 String memberUniqueName = member.getName();
-                int idx = measures.getRealMeasureIdxByUniquName(memberUniqueName);
-                result[i] = measureValues[idx];
+                int idx = measures.getRealMeasureIdxByName(memberUniqueName);
+                result[i] = rawValues[idx];
             }
         }
         return result;
@@ -162,15 +133,14 @@ public class Problem {
      * szőközönként és a measure nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
-    private String[] replaceMeasurUniqeNameToIndex(String calculatedFormula, Measures measures) throws NumberFormatException {
+    private String[] replaceMeasureNameWithIndex(String calculatedFormula, Measures measures) throws NumberFormatException {
         String[] calculatedFormulaSegments = calculatedFormula.split(" ");
         String[] result = new String[calculatedFormulaSegments.length];
-        PostfixCalculator calculator = new PostfixCalculator();
         for (int i = 0; i < calculatedFormulaSegments.length; i++) {
-            if ( calculator.isOperator(calculatedFormulaSegments[i]) ) {
+            if (PostfixCalculator.isOperator(calculatedFormulaSegments[i])) {
                 result[i] = calculatedFormulaSegments[i];
             } else {
-                int idx = measures.getRealMeasureIdxByUniquName(calculatedFormulaSegments[i]);
+                int idx = measures.getRealMeasureIdxByName(calculatedFormulaSegments[i]);
                 if (idx == -1) {
                     double d = Double.parseDouble(calculatedFormulaSegments[i]);
                     result[i] = Double.toString(d);

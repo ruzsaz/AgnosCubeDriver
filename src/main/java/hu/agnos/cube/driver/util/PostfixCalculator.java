@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver.util;
 
 import java.util.Stack;
@@ -21,28 +16,19 @@ public class PostfixCalculator {
     public static final String ABS = "|";
     public static final String IS_ZERO = "?";
 
-    public double calculate(String[] input, double[] measures) {
+    public static double calculate(String[] input, double[] measures) {
         String[] formula = replaceIndexToValue(input, measures);
         return handleCalculation(formula);
     }
 
-    public boolean isOperator(String s) {
-        boolean result = false;
-        switch (s) {
-            case ADD:
-            case SUB:
-            case MUL:
-            case DIV:
-            case SQU:
-            case ABS:
-            case IS_ZERO:
-                result = true;
-                break;
-        }
-        return result;
+    public static boolean isOperator(String s) {
+        return switch (s) {
+            case ADD, SUB, MUL, DIV, SQU, ABS, IS_ZERO -> true;
+            default -> false;
+        };
     }
 
-    private String[] replaceIndexToValue(String[] inputs, double[] measures) {
+    private static String[] replaceIndexToValue(String[] inputs, double[] measures) {
         String[] outputs = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
             if (inputs[i].equals(ADD) || inputs[i].equals(SUB) || inputs[i].equals(MUL) || inputs[i].equals(DIV) || inputs[i].equals(SQU) || inputs[i].equals(ABS)) {
@@ -60,7 +46,7 @@ public class PostfixCalculator {
         return outputs;
     }
 
-    private double handleCalculation(String[] el) {
+    private static double handleCalculation(String[] el) {
         double operand1, operand2, operand3;
         Stack<Double> stack = new Stack<>();
         for (String s : el) {

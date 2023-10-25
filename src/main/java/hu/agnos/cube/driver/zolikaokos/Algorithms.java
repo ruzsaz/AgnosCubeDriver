@@ -183,7 +183,7 @@ public class Algorithms {
     }
 
 
-    public static double[] getContainedSumNyuszival2(TIntArrayList a, TIntArrayList b, double[][] facts) {
+    public static double[] getContainedSumNyuszival2(TIntArrayList a, TIntArrayList b, float[][] facts) {
         int numberOfFacts = facts.length;
         double[] result = new double[numberOfFacts];
         for (int intvIndex = 0, intvIndexMax = a.size(); intvIndex < intvIndexMax; intvIndex++) {
@@ -197,7 +197,7 @@ public class Algorithms {
     }
 
 
-    public static double[] calculateSumNyuszival2(int[][] Oa, int[][] Ob, int[][] a, int[][] b, double[][] facts) {
+    public static double[] calculateSumNyuszival2(int[][] Oa, int[][] Ob, int[][] a, int[][] b, float[][] facts) {
         double[] result;
             // Az olapos dimenziókkal való metszőintervallum megállapítása.
             int minSource = 0;

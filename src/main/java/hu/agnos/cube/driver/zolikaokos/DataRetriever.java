@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.agnos.cube.driver.zolikaokos;
 
-import hu.agnos.molap.Cube;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -15,26 +9,23 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+
 /**
  *
  * @author ruzsaz
  */
 public class DataRetriever {
 
+    @Getter
     private final List<Problem> problems;
-    private final Cube cube;
     private final List<Callable<ResultElement>> tasks;
     private final int numberOfProcessors;
 
-    public DataRetriever(Cube cube) {
-        this.cube = cube;
+    public DataRetriever() {
         this.problems = new ArrayList<>();
         this.tasks = new ArrayList<>();
         this.numberOfProcessors = Runtime.getRuntime().availableProcessors();
-    }
-
-    public List<Problem> getProblems() {
-        return problems;
     }
 
     public void setProblems(List<Problem> problems) {
@@ -44,8 +35,7 @@ public class DataRetriever {
     }
 
     public void addProblem(Problem problem) {
-        Callable<ResultElement> c = () -> problem.compute(cube);
-        this.tasks.add(c);
+        this.tasks.add(problem::compute);
         this.problems.add(problem);
     }
 
