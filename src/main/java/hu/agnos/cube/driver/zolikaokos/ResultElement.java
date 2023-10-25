@@ -1,32 +1,24 @@
 package hu.agnos.cube.driver.zolikaokos;
 
+import hu.agnos.molap.dimension.DimValue;
+import lombok.Getter;
+
 /**
  * Ez az osztály az eredményhalmaz egy sorát reprzentálja
  *
  * @author ruzsaz
  */
+@Getter
 public class ResultElement {
 
-    private final String[] header;
+    private final DimValue[] header;
     private final int drillVectorId;
     private final double[] measureValues;
 
-    public ResultElement(String[] header, double[] measureValues, int drillVectorId) {
+    public ResultElement(DimValue[] header, double[] measureValues, int drillVectorId) {
         this.header = header;
         this.measureValues = measureValues;
         this.drillVectorId = drillVectorId;
-    }
-
-    public String[] getHeader() {
-        return header;
-    }
-
-    public double[] getMeasureValues() {
-        return measureValues;
-    }
-
-    public int getDrillVectorId() {
-        return drillVectorId;
     }
 
     @Override
@@ -39,8 +31,8 @@ public class ResultElement {
 
     public String printHeader() {
         StringBuilder sb = new StringBuilder("\tHeader: ");
-        for (String s : header) {
-            sb.append(s).append(",");
+        for (DimValue s : header) {
+            sb.append(s.toString()).append(",");
         }
         return sb.substring(0, sb.length() - 1);
     }
@@ -54,7 +46,7 @@ public class ResultElement {
     }
 
     public ResultElement deepCopy() {
-        String[] tempHeader = new String[header.length];
+        DimValue[] tempHeader = new DimValue[header.length];
         System.arraycopy(header, 0, tempHeader, 0, header.length);
 
         double[] tempMeasureValues = new double[measureValues.length];

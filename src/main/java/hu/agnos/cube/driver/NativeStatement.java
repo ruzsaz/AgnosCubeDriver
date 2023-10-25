@@ -24,11 +24,10 @@ public class NativeStatement {
         this.cube = cube;
     }
 
+
     public ResultSet[] executeQueries(String baseVector, String[] drillVectors) {
         int drillVectorsSize = drillVectors.length;
-        
-        
-        
+
         ResultSet[] resultSet = new ResultSet[drillVectorsSize];        
         DataRetriever retriever = new DataRetriever(cube);
 
@@ -42,7 +41,8 @@ public class NativeStatement {
                 String[] baseVectorArray = baseVector.split(":", -1);
                 String[] drillVectorArray = drillVector.split(":", -1);
                 NativeQueryGenerator queryGenerator = new NativeQueryGenerator(cube.getDimensions(), cube.getHierarchyIndex());
-                newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, drillVectorArray);
+                String[] baseVectorArrayAsIds = queryGenerator.convertIdBaseVectorFromKnowIdBaseVector(baseVectorArray);
+                newBaseVectorArray = queryGenerator.getBaseVectorsFromDrillVector(baseVectorArray, baseVectorArrayAsIds, drillVectorArray);
             }
 
             if (newBaseVectorArray != null) {
@@ -56,10 +56,10 @@ public class NativeStatement {
         List<Future<ResultElement>> futures = retriever.computeAll();
         
         
-        List<List<ResultElement>>  eredmeny = new ArrayList<>();
+        List<List<ResultElement>> result = new ArrayList<>();
         for(int i= 0; i < drillVectorsSize; i++){
             List<ResultElement> temp = new ArrayList<>();
-            eredmeny.add(temp);
+            result.add(temp);
         }
 
 
@@ -67,20 +67,20 @@ public class NativeStatement {
             try {
                 ResultElement r = future.get();
                 int drillVectorId = r.getDrillVectorId();
-                List<ResultElement> temp = eredmeny.get(drillVectorId);
+                List<ResultElement> temp = result.get(drillVectorId);
                 temp.add(r);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(NativeStatement.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-      
+
         for(int i = 0; i < drillVectorsSize; i++){
-            resultSet[i].setResponse(eredmeny.get(i));         
+            resultSet[i].setResponse(result.get(i));
         }
         
         return resultSet;
     }
+
 //
 //    public ResultSet executeQuery(String baseVector, String drillVector) {
 //        ResultSet resultSet = null;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.molap.Cube;
+import hu.agnos.molap.dimension.DimValue;
 import hu.agnos.molap.dimension.Dimension;
 import hu.agnos.molap.dimension.Hierarchy;
 import hu.agnos.molap.dimension.Node;
@@ -20,7 +21,7 @@ public class Problem {
 
     public int[][] Oa, Ob, a, b;
     private final int drillVectorId;
-    private String[] header;
+    private DimValue[] header;
     private final String baseVector;
 
     public Problem(int drillVectorId, String baseVector) {
@@ -28,11 +29,9 @@ public class Problem {
         this.baseVector = baseVector;
     }
 
-    public ResultElement compute(Cube cube) throws InterruptedException {
+    public ResultElement compute(Cube cube) {
         uploadIntervalAndHeader(cube.getDimensions(), cube.getHierarchyHeader().length, cube.getHierarchyIndex());
-        Algorithms algorithms = new Algorithms();
-
-        double[] calculatedValues = algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
+        double[] calculatedValues = Algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
         double[] measureValues = getAllMeasureAsString(calculatedValues, cube.getMeasures());
         return new ResultElement(header, measureValues, drillVectorId);
     }
@@ -48,11 +47,9 @@ public class Problem {
      *      és dimenzión belül melyik hierarchiába esik.
      */
     private void uploadIntervalAndHeader(List<Dimension> dimensions, int hierarchySize, int[][] hierarchyIndex) {
-//        System.out.println("baseVector: " +baseVector);
         String[] baseVectorArray = baseVector.split(":", -1);
 
-//        System.out.println("baseVectorArray: " + baseVectorArray.length);
-        this.header = new String[hierarchySize];
+        this.header = new DimValue[hierarchySize];
 
         List< int[]> OaList = new ArrayList<>();
         List< int[]> ObList = new ArrayList<>();
@@ -68,7 +65,6 @@ public class Problem {
             Hierarchy hierarchy = dimension.getHierarchyById(hierIdx);
             Node hierarchyNode = null;
             if (baseVectorArray[i] != null && !baseVectorArray[i].isEmpty()) {
-//                System.out.print("baseVectorArray[i] != null:  ");
                 String[] splitedNodePath = baseVectorArray[i].split(",");
 
                 int depth = splitedNodePath.length;
@@ -83,11 +79,9 @@ public class Problem {
                 }
 
             } else {
-//                System.out.print("baseVectorArray[i] == null:  ");
                 hierarchyNode = hierarchy.getRoot();
             }
-//            System.out.println(hierarchyNode.getDataAsString());
-            this.header[i] = hierarchyNode.getDataAsString();
+            this.header[i] = hierarchyNode.getDataAsDimValue();
 
             if (hierarchy.isPartitioned()) {
                 OaList.add(hierarchyNode.getIntervalsLowerIndexes());
@@ -160,7 +154,7 @@ public class Problem {
     }
 
     /**
-     * Ez az eljárás a Calculated formulában lévő measur neveket lecseréli azok
+     * Ez az eljárás a Calculated formulában lévő measure neveket lecseréli azok
      * Cells -béli oszlopindexére
      *
      * @param calculatedFormula az átalakítandó formula
@@ -193,6 +187,4 @@ public class Problem {
         return "Problem{" + "baseVector=" + baseVector + '}';
     }
 
-    
-    
 }

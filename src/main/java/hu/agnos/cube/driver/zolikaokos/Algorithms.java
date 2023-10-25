@@ -17,7 +17,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public int getThisOrBiggersIndex(int[] array, int key) {
+    public static int getThisOrBiggersIndex(int[] array, int key) {
         int index = Arrays.binarySearch(array, key);
         return (index < 0) ? -index - 1 : index;
     }
@@ -32,7 +32,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public int getThisOrBiggersIndex(int[] array, int fromIndex, int toIndex, int key) {
+    public static int getThisOrBiggersIndex(int[] array, int fromIndex, int toIndex, int key) {
         int index = Arrays.binarySearch(array, fromIndex, toIndex + 1, key);
         return (index < 0) ? -index - 1 : index;
     }
@@ -45,7 +45,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public int getThisOrSmallersIndex(int[] array, int key) {
+    public static int getThisOrSmallersIndex(int[] array, int key) {
         int index = Arrays.binarySearch(array, key);
         return (index < 0) ? -index - 2 : index;
     }
@@ -60,7 +60,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public int getThisOrSmallersIndex(int[] array, int fromIndex, int toIndex, int key) {
+    public static int getThisOrSmallersIndex(int[] array, int fromIndex, int toIndex, int key) {
         int index = Arrays.binarySearch(array, fromIndex, toIndex + 1, key);
         return (index < 0) ? -index - 2 : index;
     }
@@ -76,7 +76,7 @@ public class Algorithms {
      * @param defaultMax Ha nincs mivel elmetszeni, akkor a felvevendő maximum.
      * @return A metszetintervallum [bal, jobb] végpontja.
      */
-    public int[] monotonicIntersection(int[][] a, int[][] b, int defaultMin, int defaultMax) {
+    public static int[] monotonicIntersection(int[][] a, int[][] b, int defaultMin, int defaultMax) {
         if (a == null || a.length == 0) {
             return new int[]{defaultMin, defaultMax}; // Ha nincs mit elmetszeni
         }
@@ -112,7 +112,7 @@ public class Algorithms {
      * figyelembevenni a az intervallumokat. Szintenként tömbbe rendezve.
      * @return A metszet intervallumrendszer (zárt intervallumok).
      */
-    public TIntArrayList[] intersection(int min, int max, int[][] a, int[][] b, int[] minIndex, int[] maxIndex) {
+    public static TIntArrayList[] intersection(int min, int max, int[][] a, int[][] b, int[] minIndex, int[] maxIndex) {
         TIntArrayList Ra = new TIntArrayList();
         TIntArrayList Rb = new TIntArrayList();
         int depth = a.length;
@@ -167,7 +167,7 @@ public class Algorithms {
      * @param max A metsző intervallum jobb végpontja.
      * @return Az eredménybe tartozó indexhalmaz [minimuma, maximuma]
      */
-    public int[] trimIntervals(int[] a, int[] b, int min, int max) {
+    public static int[] trimIntervals(int[] a, int[] b, int min, int max) {
         if (a == null) {
             return null;
         }
@@ -183,7 +183,7 @@ public class Algorithms {
     }
 
 
-    public double[] getContainedSumNyuszival2(TIntArrayList a, TIntArrayList b, double[][] facts) {
+    public static double[] getContainedSumNyuszival2(TIntArrayList a, TIntArrayList b, double[][] facts) {
         int numberOfFacts = facts.length;
         double[] result = new double[numberOfFacts];
         for (int intvIndex = 0, intvIndexMax = a.size(); intvIndex < intvIndexMax; intvIndex++) {
@@ -197,7 +197,7 @@ public class Algorithms {
     }
 
 
-    public double[] calculateSumNyuszival2(int[][] Oa, int[][] Ob, int[][] a, int[][] b, double[][] facts) {
+    public static double[] calculateSumNyuszival2(int[][] Oa, int[][] Ob, int[][] a, int[][] b, double[][] facts) {
         double[] result;
             // Az olapos dimenziókkal való metszőintervallum megállapítása.
             int minSource = 0;
