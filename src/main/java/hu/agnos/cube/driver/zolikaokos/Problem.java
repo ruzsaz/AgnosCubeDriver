@@ -1,6 +1,7 @@
 package hu.agnos.cube.driver.zolikaokos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import hu.agnos.cube.driver.util.PostfixCalculator;
@@ -10,6 +11,8 @@ import hu.agnos.cube.dimension.Node;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
 import hu.agnos.cube.measure.Measures;
+import hu.agnos.cube.meta.dto.NodeDTO;
+import hu.agnos.cube.meta.dto.ResultElement;
 
 /**
  *
@@ -33,7 +36,20 @@ public class Problem {
         uploadIntervalAndHeader(cube.getDimensions());
         double[] calculatedValues = Algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
         double[] measureValues = getAllMeasureAsString(calculatedValues, cube.getMeasures());
-        return new ResultElement(header, measureValues, drillVectorId);
+        return new ResultElement(translateNodes(header), measureValues, drillVectorId);
+    }
+
+    private static NodeDTO[] translateNodes(Node[] nodes) {
+        int nodeNumber = nodes.length;
+        NodeDTO[] result = new NodeDTO[nodeNumber];
+        for (int i = 0; i < nodeNumber; i++) {
+            result[i] = translateNode(nodes[i]);
+        }
+        return result;
+    }
+
+    private static NodeDTO translateNode(Node n) {
+        return new NodeDTO(n.getCode(), n.getName());
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import hu.agnos.cube.meta.dto.ResultElement;
 import lombok.Getter;
 
 /**

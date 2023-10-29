@@ -17,7 +17,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public static int getThisOrBiggersIndex(int[] array, int key) {
+    public static int getThisOrBiggerIndex(int[] array, int key) {
         int index = Arrays.binarySearch(array, key);
         return (index < 0) ? -index - 1 : index;
     }
@@ -32,7 +32,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public static int getThisOrBiggersIndex(int[] array, int fromIndex, int toIndex, int key) {
+    public static int getThisOrBiggerIndex(int[] array, int fromIndex, int toIndex, int key) {
         int index = Arrays.binarySearch(array, fromIndex, toIndex + 1, key);
         return (index < 0) ? -index - 1 : index;
     }
@@ -45,7 +45,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public static int getThisOrSmallersIndex(int[] array, int key) {
+    public static int getThisOrSmallerIndex(int[] array, int key) {
         int index = Arrays.binarySearch(array, key);
         return (index < 0) ? -index - 2 : index;
     }
@@ -60,7 +60,7 @@ public class Algorithms {
      * @param key Keresett elem.
      * @return A megtalált elem indexe.
      */
-    public static int getThisOrSmallersIndex(int[] array, int fromIndex, int toIndex, int key) {
+    public static int getThisOrSmallerIndex(int[] array, int fromIndex, int toIndex, int key) {
         int index = Arrays.binarySearch(array, fromIndex, toIndex + 1, key);
         return (index < 0) ? -index - 2 : index;
     }
@@ -86,7 +86,7 @@ public class Algorithms {
         for (int d = 0; d < a.length; d++) {
             int[] currentA = a[d];
             int[] currentB = b[d];
-            int index = getThisOrBiggersIndex(currentB, min);
+            int index = getThisOrBiggerIndex(currentB, min);
             if (index < currentA.length && currentA[index] <= max) {
                 min = Math.max(currentA[index], min);
                 max = Math.min(currentB[index], max);
@@ -172,8 +172,8 @@ public class Algorithms {
             return null;
         }
 
-        int minIndex = getThisOrBiggersIndex(b, min);
-        int maxIndex = getThisOrSmallersIndex(a, max);
+        int minIndex = getThisOrBiggerIndex(b, min);
+        int maxIndex = getThisOrSmallerIndex(a, max);
 
         if (minIndex > maxIndex) {
             return new int[]{0, -1}; // Üres a válasz
