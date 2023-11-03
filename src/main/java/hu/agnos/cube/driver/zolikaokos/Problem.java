@@ -11,8 +11,8 @@ import hu.agnos.cube.dimension.Node;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
 import hu.agnos.cube.measure.Measures;
-import hu.agnos.cube.meta.dto.NodeDTO;
-import hu.agnos.cube.meta.dto.ResultElement;
+import hu.agnos.cube.meta.resultDto.NodeDTO;
+import hu.agnos.cube.meta.resultDto.ResultElement;
 
 /**
  *

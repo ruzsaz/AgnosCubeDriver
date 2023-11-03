@@ -1,19 +1,15 @@
 package hu.agnos.cube.driver.zolikaokos;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 import gnu.trove.list.array.TIntArrayList;
-
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-/**
- *
- * @author ruzsaz
- */
 public class AlgorithmsTest {
 
     static int s = 10000000;
