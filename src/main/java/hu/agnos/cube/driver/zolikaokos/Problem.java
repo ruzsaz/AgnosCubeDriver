@@ -1,7 +1,6 @@
 package hu.agnos.cube.driver.zolikaokos;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import hu.agnos.cube.driver.util.PostfixCalculator;
@@ -10,7 +9,6 @@ import hu.agnos.cube.dimension.Dimension;
 import hu.agnos.cube.dimension.Node;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
-import hu.agnos.cube.measure.Measures;
 import hu.agnos.cube.meta.resultDto.NodeDTO;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
@@ -35,7 +33,7 @@ public class Problem {
     public ResultElement compute() {
         uploadIntervalAndHeader(cube.getDimensions());
         double[] calculatedValues = Algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
-        double[] measureValues = getAllMeasureAsString(calculatedValues, cube.getMeasures());
+        double[] measureValues = getAllMeasureAsString(calculatedValues, cube);
         return new ResultElement(translateNodes(header), measureValues, drillVectorId);
     }
 
@@ -118,22 +116,22 @@ public class Problem {
      * @return a megkonstruált szting tömb, amelyben minden measure megfelelő
      * sorrendben szerepel.
      */
-    private double[] getAllMeasureAsString(double[] rawValues, Measures measures) {
-
-        int measureCnt = measures.getMeasures().size();
+    private double[] getAllMeasureAsString(double[] rawValues, Cube cube) {
+        List<AbstractMeasure> measures = cube.getMeasures();
+        int measureCnt = measures.size();
         double[] result = new double[measureCnt];
 
         for (int i = 0; i < measureCnt; i++) {
-            AbstractMeasure member = measures.getMeasures().get(i);
+            AbstractMeasure member = measures.get(i);
 
             if (member.isCalculatedMember()) {
                 String calculatedFormula = ((CalculatedMeasure) member).getFormula();
-                String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula, measures);
+                String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula, cube);
                 double d = PostfixCalculator.calculate(formulaWithIndex, rawValues);
                 result[i] = d;
             } else {
                 String memberUniqueName = member.getName();
-                int idx = measures.getRealMeasureIdxByName(memberUniqueName);
+                int idx = cube.getRealMeasureIdxByName(memberUniqueName);
                 result[i] = rawValues[idx];
             }
         }
@@ -149,14 +147,14 @@ public class Problem {
      * szőközönként és a measure nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
-    private String[] replaceMeasureNameWithIndex(String calculatedFormula, Measures measures) throws NumberFormatException {
+    private String[] replaceMeasureNameWithIndex(String calculatedFormula, Cube cube) throws NumberFormatException {
         String[] calculatedFormulaSegments = calculatedFormula.split(" ");
         String[] result = new String[calculatedFormulaSegments.length];
         for (int i = 0; i < calculatedFormulaSegments.length; i++) {
             if (PostfixCalculator.isOperator(calculatedFormulaSegments[i])) {
                 result[i] = calculatedFormulaSegments[i];
             } else {
-                int idx = measures.getRealMeasureIdxByName(calculatedFormulaSegments[i]);
+                int idx = cube.getRealMeasureIdxByName(calculatedFormulaSegments[i]);
                 if (idx == -1) {
                     double d = Double.parseDouble(calculatedFormulaSegments[i]);
                     result[i] = Double.toString(d);
