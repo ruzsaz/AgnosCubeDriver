@@ -3,49 +3,39 @@ package hu.agnos.cube.driver.zolikaokos;
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.agnos.cube.driver.util.PostfixCalculator;
+import gnu.trove.list.array.TIntArrayList;
+
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
 import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.driver.util.PostfixCalculator;
+import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
 import hu.agnos.cube.meta.resultDto.NodeDTO;
 import hu.agnos.cube.meta.resultDto.ResultElement;
-import hu.agnos.cube.measure.AbstractMeasure;
 
-/**
- *
- * @author ruzsaz
- */
-public class Problem {
+public abstract class Problem {
 
-    private final Cube cube;
+    protected final Cube cube;
+    protected final int drillVectorId;
+    private final List<Node> baseVector;
     protected int[][] offlineCalculatedLowerIndexes;
     protected int[][] offlineCalculatedUpperIndexes;
     protected int[][] lowerIndexes;
     protected int[][] upperIndexes;
-    private final int drillVectorId;
-    private Node[] header;
-    private final List<Node> baseVector;
+    protected Node[] header;
 
-    public Problem(Cube cube, int drillVectorId, List<Node> baseVector) {
+    protected Problem(Cube cube, int drillVectorId, List<Node> baseVector) {
         this.cube = cube;
         this.drillVectorId = drillVectorId;
         this.baseVector = baseVector;
     }
 
-    public ResultElement compute() {
-        uploadIntervalAndHeader(cube.getDimensions());
-        double[] calculatedValues = SumAggregateAlgorithms.calculateSumNyuszival2(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
-                lowerIndexes, upperIndexes, cube.getCells().getCells());
-        double[] measureValues = getAllMeasureAsString(calculatedValues, cube);
-        return new ResultElement(translateNodes(header), measureValues, drillVectorId);
-    }
-
-    private static NodeDTO[] translateNodes(Node[] nodes) {
+    static NodeDTO[] translateNodes(Node[] nodes) {
         int nodeNumber = nodes.length;
         NodeDTO[] result = new NodeDTO[nodeNumber];
         for (int i = 0; i < nodeNumber; i++) {
-            result[i] = translateNode(nodes[i]);
+            result[i] = Problem.translateNode(nodes[i]);
         }
         return result;
     }
@@ -55,27 +45,67 @@ public class Problem {
     }
 
     /**
-     * Ez az eljárás feltölti az intervellum rendszereket, továbbá a header
-     * részt is kitölti. Mivel az intervallumok feltöltéséhez a Nodokat ki kell
-     * keresni, így célszerű ebben a lépésben a headert is kitölteni (különben
-     * újból ki kell keresni a nodot).
+     * Gets the intervals to aggregate the values from to get the indicators at the requested aggregation level.
      *
-     * @param dimensions lowerIndexes kockában lévő dimenziók listája
+     * @param offlineCalculatedLowerIndexes Array of the lower indexes in the dimensions along the values are
+     *         pre-calculated (First index is the index of the dimension, second is the index of the interval)
+     * @param offlineCalculatedUpperIndexes Array of the upper indexes in the dimensions along the values are
+     *         pre-calculated (First index is the index of the dimension, second is the index of the interval)
+     * @param lowerIndexes Array of the lower indexes in the on-the-fly aggregating dimensions (First index is
+     *         the index of the dimension, second is the index of the interval)
+     * @param upperIndexes Array of the upper indexes in the on-the-fly aggregating dimensions (First index is
+     *         the index of the dimension, second is the index of the interval)
+     * @param maxDefault Maximal index in the data cube (required for the answer when there are no indexes at
+     *         all only)
+     * @return The monotonic increasing lower indexes and corresponding upper indexes in an array of 2 dimensions
      */
-    private void uploadIntervalAndHeader(List<Dimension> dimensions) {
-        int dimensionSize = dimensions.size();
-        this.header = new Node[dimensionSize];
+    protected static TIntArrayList[] getSourceIntervals(int[][] offlineCalculatedLowerIndexes,
+                                                        int[][] offlineCalculatedUpperIndexes,
+                                                        int[][] lowerIndexes,
+                                                        int[][] upperIndexes,
+                                                        int maxDefault) {
+        double[] result;
+        // Az olapos dimenziókkal való metszőintervallum megállapítása.
+        int[] offlineCalculatedIntersection = Algorithms.monotonicIntersection(offlineCalculatedLowerIndexes,
+                offlineCalculatedUpperIndexes, 0, maxDefault);
 
-        List< int[]> offlineCalculatedLowerIndexesList = new ArrayList<>();
-        List< int[]> offlineCalculatedUpperIndexesList = new ArrayList<>();
-        List< int[]> lowerIndexesList = new ArrayList<>();
-        List< int[]> upperIndexesList = new ArrayList<>();
+        // A menet közben aggregálandó intervallumok elmetszése az olap-sávval.
+        int numberOfOnTheFlyDimensions = lowerIndexes.length;
+        int[] minTrimIndex = new int[numberOfOnTheFlyDimensions];
+        int[] maxTrimIndex = new int[numberOfOnTheFlyDimensions];
+        for (int d = 0; d < numberOfOnTheFlyDimensions; d++) {
+            int[] trimIndexes = Algorithms.trimIntervals(lowerIndexes[d],
+                    upperIndexes[d],
+                    offlineCalculatedIntersection[0],
+                    offlineCalculatedIntersection[1]);
+            minTrimIndex[d] = trimIndexes[0];
+            maxTrimIndex[d] = trimIndexes[1];
+        }
+        // Menet közben aggregálandó intervallumok metszete.
+        return Algorithms.intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
+    }
 
-        for (int i = 0; i < dimensionSize; i++) {
+    abstract ResultElement compute();
+
+    /**
+     * Ez az eljárás feltölti az intervellum rendszereket, továbbá a header részt is kitölti. Mivel az intervallumok
+     * feltöltéséhez a Nodokat ki kell keresni, így célszerű ebben a lépésben a headert is kitölteni (különben újból ki
+     * kell keresni a nodot).
+     */
+    void initForCalculations(int numberOfDimensionsToUse) {
+        List<Dimension> dimensions = cube.getDimensions();
+        this.header = new Node[numberOfDimensionsToUse];
+
+        List<int[]> offlineCalculatedLowerIndexesList = new ArrayList<>();
+        List<int[]> offlineCalculatedUpperIndexesList = new ArrayList<>();
+        List<int[]> lowerIndexesList = new ArrayList<>();
+        List<int[]> upperIndexesList = new ArrayList<>();
+
+        for (int i = 0; i < numberOfDimensionsToUse; i++) {
             Dimension dimension = dimensions.get(i);
             Node n = baseVector.get(i);
 
-            this.header[i] = n;
+            header[i] = n;
             if (dimension.isOfflineCalculated()) {
                 offlineCalculatedLowerIndexesList.add(n.getIntervalsLowerIndexes());
                 offlineCalculatedUpperIndexesList.add(n.getIntervalsUpperIndexes());
@@ -112,17 +142,15 @@ public class Problem {
     }
 
     /**
-     * Ez az érték a megkapott valós measure értékeket a kívánt formátumra
-     * alakítja. Ehhez a kalkulált measure-ök értékét meg kell határozni, majd a
-     * valós és kalkulált measure-ok sorrendjét a meta-ban (Measures osztály)
-     * meghatározott sorrendbe kell rendezni és végezetül a double értékeket
-     * vesszővel szeparált String értékekre kell alakítani.
+     * Ez az érték a megkapott valós measure értékeket a kívánt formátumra alakítja. Ehhez a kalkulált measure-ök
+     * értékét meg kell határozni, majd a valós és kalkulált measure-ok sorrendjét a meta-ban (Measures osztály)
+     * meghatározott sorrendbe kell rendezni és végezetül a double értékeket vesszővel szeparált String értékekre kell
+     * alakítani.
      *
      * @param rawValues valós measure-ök tömbje
-     * @return lowerIndexes megkonstruált szting tömb, amelyben minden measure megfelelő
- sorrendben szerepel.
+     * @return lowerIndexes megkonstruált szting tömb, amelyben minden measure megfelelő sorrendben szerepel.
      */
-    private double[] getAllMeasureAsString(double[] rawValues, Cube cube) {
+    double[] getAllMeasureAsString(double[] rawValues) {
         List<AbstractMeasure> measures = cube.getMeasures();
         int measureCnt = measures.size();
         double[] result = new double[measureCnt];
@@ -145,12 +173,11 @@ public class Problem {
     }
 
     /**
-     * Ez az eljárás lowerIndexes Calculated formulában lévő measure neveket lecseréli azok
- Cells -béli oszlopindexére
+     * Ez az eljárás lowerIndexes Calculated formulában lévő measure neveket lecseréli azok Cells -béli oszlopindexére
      *
      * @param calculatedFormula az átalakítandó formula
-     * @return ez eredeti formulanak egy olyan változata, amely split-elve van
- szőközönként és lowerIndexes measure nevek helyett azok indexei található
+     * @return ez eredeti formulanak egy olyan változata, amely split-elve van szőközönként és lowerIndexes measure
+     *         nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
     private String[] replaceMeasureNameWithIndex(String calculatedFormula, Cube cube) throws NumberFormatException {

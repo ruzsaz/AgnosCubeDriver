@@ -28,15 +28,15 @@ public class DataRetriever {
         this.numberOfProcessors = Runtime.getRuntime().availableProcessors();
     }
 
-    public void setProblems(List<Problem> problems) {
-        for (Problem p : problems) {
-            this.addProblem(p);
+    public void setProblems(List<SumProblem> problems) {
+        for (SumProblem p : problems) {
+            addProblem(p);
         }
     }
 
     public void addProblem(Problem problem) {
-        this.tasks.add(problem::compute);
-        this.problems.add(problem);
+        tasks.add(problem::compute);
+        problems.add(problem);
     }
 
    
