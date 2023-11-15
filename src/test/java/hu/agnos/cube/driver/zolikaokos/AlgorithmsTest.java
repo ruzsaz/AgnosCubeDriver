@@ -50,34 +50,34 @@ public class AlgorithmsTest {
 
     @Test
     public void testGetThisOrBiggersIndex() {
-        assertEquals(4, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 10));
-        assertEquals(2, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 5));
-        assertEquals(0, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, -3));
-        assertEquals(6, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 15));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 10));
+        assertEquals(2, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 5));
+        assertEquals(0, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, -3));
+        assertEquals(6, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 15));
     }
 
     @Test
     public void testGetThisOrSmallersIndex() {
-        assertEquals(4, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 10));
-        assertEquals(1, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 5));
-        assertEquals(-1, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, -3));
-        assertEquals(5, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 15));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 10));
+        assertEquals(1, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 5));
+        assertEquals(-1, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, -3));
+        assertEquals(5, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 15));
     }
 
     @Test
     public void testGetThisOrBiggersIndex2() {
-        assertEquals(4, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, 10));
-        assertEquals(4, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 0, 3, 12));
-        assertEquals(3, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, -3));
-        assertEquals(5, Algorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 2, 4, 15));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, 10));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 0, 3, 12));
+        assertEquals(3, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, -3));
+        assertEquals(5, SumAggregateAlgorithms.getThisOrBiggerIndex(new int[]{2, 4, 6, 8, 10, 12}, 2, 4, 15));
     }
 
     @Test
     public void testGetThisOrSmallersIndex2() {
-        assertEquals(4, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 4, 10));
-        assertEquals(2, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, 5));
-        assertEquals(0, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 1, 3, -3));
-        assertEquals(4, Algorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 2, 4, 15));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 4, 10));
+        assertEquals(2, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 3, 5, 5));
+        assertEquals(0, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 1, 3, -3));
+        assertEquals(4, SumAggregateAlgorithms.getThisOrSmallerIndex(new int[]{2, 4, 6, 8, 10, 12}, 2, 4, 15));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AlgorithmsTest {
         int[] b0_2 = new int[]{6, 19, 158, 235, 499, 578, 582, 678, 812, 1000, 1217};
         int[][] a0 = new int[][]{a0_0, a0_1, a0_2};
         int[][] b0 = new int[][]{b0_0, b0_1, b0_2};
-        int[] result0 = Algorithms.monotonicIntersection(a0, b0, 0, 2000);
+        int[] result0 = SumAggregateAlgorithms.monotonicIntersection(a0, b0, 0, 2000);
         assertArrayEquals(new int[]{647, 678}, result0);
 
         int[] a1_0 = new int[]{566};
@@ -101,22 +101,22 @@ public class AlgorithmsTest {
         int[] b1_2 = new int[]{6, 19, 158, 235, 499, 578, 582, 678, 812, 1000, 1217};
         int[][] a1 = new int[][]{a1_0, a1_1, a1_2};
         int[][] b1 = new int[][]{b1_0, b1_1, b1_2};
-        int[] result1 = Algorithms.monotonicIntersection(a1, b1, 0, 2000);
+        int[] result1 = SumAggregateAlgorithms.monotonicIntersection(a1, b1, 0, 2000);
         assertArrayEquals(new int[]{0, -1}, result1);
 
         int[] a2_0 = new int[]{566};
         int[] b2_0 = new int[]{789};
         int[][] a2 = new int[][]{a2_0};
         int[][] b2 = new int[][]{b2_0};
-        int[] result2 = Algorithms.monotonicIntersection(a2, b2, 0, 2000);
+        int[] result2 = SumAggregateAlgorithms.monotonicIntersection(a2, b2, 0, 2000);
         assertArrayEquals(new int[]{566, 789}, result2);
 
         int[][] a3 = new int[][]{};
         int[][] b3 = new int[][]{};
-        int[] result3 = Algorithms.monotonicIntersection(a3, b3, 0, 2000);
+        int[] result3 = SumAggregateAlgorithms.monotonicIntersection(a3, b3, 0, 2000);
         assertArrayEquals(new int[]{0, 2000}, result3);
 
-        assertArrayEquals(new int[]{0, 1}, Algorithms.monotonicIntersection(null, null, 0, 1));
+        assertArrayEquals(new int[]{0, 1}, SumAggregateAlgorithms.monotonicIntersection(null, null, 0, 1));
 
         int[] a4_0 = new int[]{100};
         int[] b4_0 = new int[]{200};
@@ -124,7 +124,7 @@ public class AlgorithmsTest {
         int[] b4_1 = new int[]{150, 265, 554, 712, 1034};
         int[][] a4 = new int[][]{a4_0, a4_1};
         int[][] b4 = new int[][]{b4_0, b4_1};
-        int[] result4 = Algorithms.monotonicIntersection(a4, b4, 0, 2000);
+        int[] result4 = SumAggregateAlgorithms.monotonicIntersection(a4, b4, 0, 2000);
         assertArrayEquals(new int[]{100, 150}, result4);
 
         int[] a5_0 = new int[]{100};
@@ -133,7 +133,7 @@ public class AlgorithmsTest {
         int[] b5_1 = new int[]{89, 220, 554, 712, 1034};
         int[][] a5 = new int[][]{a5_0, a5_1};
         int[][] b5 = new int[][]{b5_0, b5_1};
-        int[] result5 = Algorithms.monotonicIntersection(a5, b5, 0, 2000);
+        int[] result5 = SumAggregateAlgorithms.monotonicIntersection(a5, b5, 0, 2000);
         assertArrayEquals(new int[]{170, 200}, result5);
 
         int[] a6_0 = new int[]{100};
@@ -142,7 +142,7 @@ public class AlgorithmsTest {
         int[] b6_1 = new int[]{400, 712, 1034};
         int[][] a6 = new int[][]{a6_0, a6_1};
         int[][] b6 = new int[][]{b6_0, b6_1};
-        int[] result6 = Algorithms.monotonicIntersection(a6, b6, 0, 2000);
+        int[] result6 = SumAggregateAlgorithms.monotonicIntersection(a6, b6, 0, 2000);
         assertArrayEquals(new int[]{0, -1}, result6);
 
         int[] a7_0 = new int[]{100};
@@ -151,7 +151,7 @@ public class AlgorithmsTest {
         int[] b7_1 = new int[]{230, 260, 554, 712, 1034};
         int[][] a7 = new int[][]{a7_0, a7_1};
         int[][] b7 = new int[][]{b7_0, b7_1};
-        int[] result7 = Algorithms.monotonicIntersection(a7, b7, 0, 2000);
+        int[] result7 = SumAggregateAlgorithms.monotonicIntersection(a7, b7, 0, 2000);
         assertArrayEquals(new int[]{100, 200}, result7);
 
     }
@@ -160,7 +160,7 @@ public class AlgorithmsTest {
     public void testTrimIntervals() {
         int[] a0 = new int[]{0, 2, 4, 6, 8, 10, 12};
         int[] b0 = new int[]{1, 3, 5, 7, 9, 11, 13};
-        int[] resultIndex0 = Algorithms.trimIntervals(a0, b0, 4, 11);
+        int[] resultIndex0 = SumAggregateAlgorithms.trimIntervals(a0, b0, 4, 11);
         String r0 = "";
         for (int i = resultIndex0[0]; i <= resultIndex0[1]; i++) {
             r0 = r0 + " [" + a0[i] + "," + b0[i] + "]";
@@ -169,7 +169,7 @@ public class AlgorithmsTest {
 
         int[] a1 = new int[]{0, 20, 40, 60, 80, 100, 120};
         int[] b1 = new int[]{10, 30, 50, 70, 90, 110, 130};
-        int[] resultIndex1 = Algorithms.trimIntervals(a1, b1, 43, 100);
+        int[] resultIndex1 = SumAggregateAlgorithms.trimIntervals(a1, b1, 43, 100);
         String r1 = "";
         for (int i = resultIndex1[0]; i < resultIndex1[1] + 1; i++) {
             r1 = r1 + " [" + a1[i] + "," + b1[i] + "]";
@@ -178,12 +178,12 @@ public class AlgorithmsTest {
 
         int[] a2 = new int[]{0, 20, 40, 60, 80, 100, 120};
         int[] b2 = new int[]{10, 30, 50, 70, 90, 110, 130};
-        int[] resultIndex2 = Algorithms.trimIntervals(a2, b2, 53, 57);
+        int[] resultIndex2 = SumAggregateAlgorithms.trimIntervals(a2, b2, 53, 57);
         assertArrayEquals(new int[]{0, -1}, resultIndex2);
 
         int[] a3 = new int[]{0, 20, 40, 60, 80, 100, 120};
         int[] b3 = new int[]{0, 20, 40, 60, 80, 100, 120};
-        int[] resultIndex3 = Algorithms.trimIntervals(a3, b3, 43, 999);
+        int[] resultIndex3 = SumAggregateAlgorithms.trimIntervals(a3, b3, 43, 999);
         String r3 = "";
         for (int i = resultIndex3[0]; i < resultIndex3[1] + 1; i++) {
             r3 = r3 + " [" + a3[i] + "," + b3[i] + "]";
@@ -192,7 +192,7 @@ public class AlgorithmsTest {
 
         int[] a4 = new int[]{};
         int[] b4 = new int[]{};
-        int[] resultIndex4 = Algorithms.trimIntervals(a4, b4, 53, 57);
+        int[] resultIndex4 = SumAggregateAlgorithms.trimIntervals(a4, b4, 53, 57);
         assertArrayEquals(new int[]{0, -1}, resultIndex4);
 
     }
@@ -214,7 +214,7 @@ public class AlgorithmsTest {
         int[] minIndex = new int[]{0, 1, 2};
         int[] maxIndex = new int[]{1, 3, 7};
 
-        TIntArrayList[] result = Algorithms.intersection(min, max, Oa0, Ob0, minIndex, maxIndex);
+        TIntArrayList[] result = SumAggregateAlgorithms.intersection(min, max, Oa0, Ob0, minIndex, maxIndex);
 
         assertEquals(211, result[0].get(0));
         assertEquals(235, result[1].get(0));
@@ -265,7 +265,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests; i++) {
-            double[] result = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] result = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 
@@ -296,7 +296,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests; i++) {
-            double[] result = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] result = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 
@@ -319,7 +319,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests / 100; i++) {
-            double[] result = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] result = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 
@@ -364,7 +364,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests; i++) {
-            double[] resultSet = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] resultSet = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 
@@ -395,7 +395,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests; i++) {
-            double[] result = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] result = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 
@@ -418,7 +418,7 @@ public class AlgorithmsTest {
         Runtime.getRuntime().gc();
         long begin = System.nanoTime();
         for (int i = 0; i < numberOfTests / 100; i++) {
-            double[] result = Algorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
+            double[] result = SumAggregateAlgorithms.calculateSumNyuszival2(Oa0, Ob0, a0, b0, facts);
         }
         long duration = (System.nanoTime() - begin) / 1000000;
 

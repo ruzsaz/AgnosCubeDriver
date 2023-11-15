@@ -1,13 +1,15 @@
 package hu.agnos.cube.driver.zolikaokos;
 
 import gnu.trove.list.array.TIntArrayList;
+import hu.agnos.cube.Cube;
+import hu.agnos.cube.dimension.Node;
 import java.util.Arrays;
 
 /**
  *
  * @author ruzsaz
  */
-public class Algorithms {
+public class AbstractAggregateAlgorithms {
 
     /**
      * Kikeres egy értéket a rendezett tömbből. Ha nincs benne, akkor a nálánál
@@ -70,26 +72,28 @@ public class Algorithms {
      * meg. Egy szint intervallumában a következő szintben csak egy intervallum
      * lehet!
      *
-     * @param a A bal végpontok rendezett tömbje, szintenként tömbbe rendezve.
-     * @param b A jobb végpontok rendezett tömbje, szintenként tömbbe rendezve.
+     * @param lowerIndexes A bal végpontok rendezett tömbje, szintenként tömbbe
+     * rendezve.
+     * @param upperIndexes A jobb végpontok rendezett tömbje, szintenként tömbbe
+     * rendezve.
      * @param defaultMin Ha nincs mivel elmetszeni, akkor a felvevendő minimum.
      * @param defaultMax Ha nincs mivel elmetszeni, akkor a felvevendő maximum.
      * @return A metszetintervallum [bal, jobb] végpontja.
      */
-    public static int[] monotonicIntersection(int[][] a, int[][] b, int defaultMin, int defaultMax) {
-        if (a == null || a.length == 0) {
+    public static int[] monotonicIntersection(int[][] lowerIndexes, int[][] upperIndexes, int defaultMin, int defaultMax) {
+        if (lowerIndexes == null || lowerIndexes.length == 0) {
             return new int[]{defaultMin, defaultMax}; // Ha nincs mit elmetszeni
         }
 
-        int min = a[0][0];
-        int max = b[0][0];
-        for (int d = 0; d < a.length; d++) {
-            int[] currentA = a[d];
-            int[] currentB = b[d];
-            int index = getThisOrBiggerIndex(currentB, min);
-            if (index < currentA.length && currentA[index] <= max) {
-                min = Math.max(currentA[index], min);
-                max = Math.min(currentB[index], max);
+        int min = lowerIndexes[0][0];
+        int max = upperIndexes[0][0];
+        for (int d = 0; d < lowerIndexes.length; d++) {
+            int[] currentLower = lowerIndexes[d];
+            int[] currentUpper = upperIndexes[d];
+            int index = getThisOrBiggerIndex(currentUpper, min);
+            if (index < currentLower.length && currentLower[index] <= max) {
+                min = Math.max(currentLower[index], min);
+                max = Math.min(currentUpper[index], max);
             } else {
                 return new int[]{0, -1}; // Üreshalmaz
             }
@@ -104,55 +108,57 @@ public class Algorithms {
      * az eredményben.
      * @param max A meghatározandó számok maximuma. Ennél nagyobb szám nem lesz
      * az eredményben.
-     * @param a A bal végpontok rendezett tömbje, szintenként tömbbe rendezve.
-     * @param b A jobb végpontok rendezett tömbje, szintenként tömbbe rendezve.
+     * @param lowerIndexes A bal végpontok rendezett tömbje, szintenként tömbbe
+     * rendezve.
+     * @param upperIndexes A jobb végpontok rendezett tömbje, szintenként tömbbe
+     * rendezve.
      * @param minIndex Ettől az idenxtől kezdve (ezt is beleértve) kell
      * figyelembevenni a az intervallumokat. Szintenként tömbbe rendezve.
      * @param maxIndex Eddig az idenxig kezdve (ezt is beleértve) kell
      * figyelembevenni a az intervallumokat. Szintenként tömbbe rendezve.
      * @return A metszet intervallumrendszer (zárt intervallumok).
      */
-    public static TIntArrayList[] intersection(int min, int max, int[][] a, int[][] b, int[] minIndex, int[] maxIndex) {
-        TIntArrayList Ra = new TIntArrayList();
-        TIntArrayList Rb = new TIntArrayList();
-        int depth = a.length;
+    public static TIntArrayList[] intersection(int min, int max, int[][] lowerIndexes, int[][] upperIndexes, int[] minIndex, int[] maxIndex) {
+        TIntArrayList Rlower = new TIntArrayList();
+        TIntArrayList Rupper = new TIntArrayList();
+        int depth = lowerIndexes.length;
         int[] index = Arrays.copyOf(minIndex, depth);
 
         for (int d = 0; d < depth; d++) {
-            if (a[d].length == 0) {
-                return new TIntArrayList[]{Ra, Rb};
+            if (lowerIndexes[d].length == 0) {
+                return new TIntArrayList[]{Rlower, Rupper};
             }
         }
 
         while (true) {
-            int maxA = min, minB = max, minBPos = -1;
+            int maxlower = min, minUpper = max, minUpperPos = -1;
 
             for (int d = 0; d < depth; d++) {
-                int thisA = a[d][index[d]];
-                int thisB = b[d][index[d]];
-                if (thisA > maxA) {
-                    maxA = thisA;
+                int thisLower = lowerIndexes[d][index[d]];
+                int thisUpper = upperIndexes[d][index[d]];
+                if (thisLower > maxlower) {
+                    maxlower = thisLower;
                 }
-                if (thisB < minB) {
-                    minB = thisB;
-                    minBPos = d;
+                if (thisUpper < minUpper) {
+                    minUpper = thisUpper;
+                    minUpperPos = d;
                 }
             }
-            if (maxA <= minB) {
-                Ra.add(maxA);
-                Rb.add(minB);
+            if (maxlower <= minUpper) {
+                Rlower.add(maxlower);
+                Rupper.add(minUpper);
             }
 
-            if (minBPos > -1) {
-                index[minBPos]++;
-                if (index[minBPos] > maxIndex[minBPos]) {
+            if (minUpperPos > -1) {
+                index[minUpperPos]++;
+                if (index[minUpperPos] > maxIndex[minUpperPos]) {
                     break;
                 }
             } else {
                 break;
             }
         }
-        return new TIntArrayList[]{Ra, Rb};
+        return new TIntArrayList[]{Rlower, Rupper};
     }
 
     /**
@@ -161,19 +167,19 @@ public class Algorithms {
      * eredmény legkisebb és legnagyobb indexű tagja TÚLNYÚLHAT a metsző
      * intervallumon, lefelé illetve felfelé.)
      *
-     * @param a A bal végpontok rendezett tömbje.
-     * @param b A jobb végpontok rendezett tömbje.
+     * @param lowerIndexes A bal végpontok rendezett tömbje.
+     * @param upperIndexes A jobb végpontok rendezett tömbje.
      * @param min A metsző intervallum bal végpontja.
      * @param max A metsző intervallum jobb végpontja.
      * @return Az eredménybe tartozó indexhalmaz [minimuma, maximuma]
      */
-    public static int[] trimIntervals(int[] a, int[] b, int min, int max) {
-        if (a == null) {
+    public static int[] trimIntervals(int[] lowerIndexes, int[] upperIndexes, int min, int max) {
+        if (lowerIndexes == null) {
             return null;
         }
 
-        int minIndex = getThisOrBiggerIndex(b, min);
-        int maxIndex = getThisOrSmallerIndex(a, max);
+        int minIndex = getThisOrBiggerIndex(upperIndexes, min);
+        int maxIndex = getThisOrSmallerIndex(lowerIndexes, max);
 
         if (minIndex > maxIndex) {
             return new int[]{0, -1}; // Üres a válasz
@@ -183,11 +189,13 @@ public class Algorithms {
     }
 
 
-    public static double[] getContainedSumNyuszival2(TIntArrayList a, TIntArrayList b, float[][] facts) {
+    public static double[] getContainedSumNyuszival2(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, float[][] facts) {
         int numberOfFacts = facts.length;
         double[] result = new double[numberOfFacts];
-        for (int intvIndex = 0, intvIndexMax = a.size(); intvIndex < intvIndexMax; intvIndex++) {
-            for (int i = a.getQuick(intvIndex), iMax = b.getQuick(intvIndex); i <= iMax; i++) {
+        int intvIndexMax = lowerIndexes.size();
+        for (int intvIndex = 0; intvIndex < intvIndexMax; intvIndex++) {
+            int iMax = upperIndexes.getQuick(intvIndex);
+            for (int i = lowerIndexes.getQuick(intvIndex); i <= iMax; i++) {
                 for (int f = 0; f < numberOfFacts; f++) {
                     result[f] += facts[f][i];
                 }
@@ -196,30 +204,45 @@ public class Algorithms {
         return result;
     }
 
-
-    public static double[] calculateSumNyuszival2(int[][] Oa, int[][] Ob, int[][] a, int[][] b, float[][] facts) {
+    public static double[] calculateSumNyuszival2(int[][] offlineCalculatedLowerIndexes,
+            int[][] offlineCalculatedUpperIndexes,
+            int[][] lowerIndexes,
+            int[][] upperIndexes,
+            Cube cube) {
         double[] result;
-            // Az olapos dimenziókkal való metszőintervallum megállapítása.
-            int minSource = 0;
-            int maxSource = facts[0].length - 1;
-            int[] olapIntersection = monotonicIntersection(Oa, Ob, minSource, maxSource);
-            
-                // A menet közben aggregálandó intervallumok elmetszése az olap-sávval.
-                int onTheFlyDimension = a.length;
-                int[] minTrimIndex = new int[onTheFlyDimension];
-                int[] maxTrimIndex = new int[onTheFlyDimension];
-                for (int d = 0; d < onTheFlyDimension; d++) {
-                    int[] trimIndexes = trimIntervals(a[d], b[d], olapIntersection[0], olapIntersection[1]);
-                    minTrimIndex[d] = trimIndexes[0];
-                    maxTrimIndex[d] = trimIndexes[1];
-                }
-                // Menet közben aggregálandó intervallumok metszete.
-                TIntArrayList[] nyusz = intersection(olapIntersection[0], olapIntersection[1], a, b, minTrimIndex, maxTrimIndex);
+        // Az olapos dimenziókkal való metszőintervallum megállapítása.
+        int minSource = 0;
+        int maxSource = cube.getCells().getCells()[0].length - 1;
+        int[] offlineCalculatedIntersection = monotonicIntersection(offlineCalculatedLowerIndexes,
+                offlineCalculatedUpperIndexes, minSource, maxSource);
 
-            // Mindent meghatározunk most.
-            result = getContainedSumNyuszival2(nyusz[0], nyusz[1], facts);
+        // A menet közben aggregálandó intervallumok elmetszése az olap-sávval.
+        int numberOfOnTheFlyCalculatedDimension = lowerIndexes.length;
+        int[] minTrimIndex = new int[numberOfOnTheFlyCalculatedDimension];
+        int[] maxTrimIndex = new int[numberOfOnTheFlyCalculatedDimension];
+        for (int d = 0; d < numberOfOnTheFlyCalculatedDimension; d++) {
+            int[] trimIndexes = trimIntervals(lowerIndexes[d],
+                    upperIndexes[d],
+                    offlineCalculatedIntersection[0],
+                    offlineCalculatedIntersection[1]);
+            minTrimIndex[d] = trimIndexes[0];
+            maxTrimIndex[d] = trimIndexes[1];
+        }
+        // Menet közben aggregálandó intervallumok metszete.
+        TIntArrayList[] lowerAndUpperIndexes = intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
+
+        // Mindent meghatározunk most.
+        result = getContainedSumNyuszival2(lowerAndUpperIndexes[0], lowerAndUpperIndexes[1], facts);
 
         return result;
     }
 
+    /**
+     *
+     * @param lowerIndexes
+     * @param upperIndexes
+     * @param cube
+     * @return
+     */
+     abstract double[] doCalculate(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Cube cube);
 }

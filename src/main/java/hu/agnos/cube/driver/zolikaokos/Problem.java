@@ -7,10 +7,10 @@ import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
 import hu.agnos.cube.dimension.Node;
-import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
 import hu.agnos.cube.meta.resultDto.NodeDTO;
 import hu.agnos.cube.meta.resultDto.ResultElement;
+import hu.agnos.cube.measure.AbstractMeasure;
 
 /**
  *
@@ -19,7 +19,10 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
 public class Problem {
 
     private final Cube cube;
-    protected int[][] Oa, Ob, a, b;
+    protected int[][] offlineCalculatedLowerIndexes;
+    protected int[][] offlineCalculatedUpperIndexes;
+    protected int[][] lowerIndexes;
+    protected int[][] upperIndexes;
     private final int drillVectorId;
     private Node[] header;
     private final List<Node> baseVector;
@@ -32,7 +35,8 @@ public class Problem {
 
     public ResultElement compute() {
         uploadIntervalAndHeader(cube.getDimensions());
-        double[] calculatedValues = Algorithms.calculateSumNyuszival2(Oa, Ob, a, b, cube.getCells().getCells());
+        double[] calculatedValues = SumAggregateAlgorithms.calculateSumNyuszival2(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
+                lowerIndexes, upperIndexes, cube.getCells().getCells());
         double[] measureValues = getAllMeasureAsString(calculatedValues, cube);
         return new ResultElement(translateNodes(header), measureValues, drillVectorId);
     }
@@ -51,70 +55,72 @@ public class Problem {
     }
 
     /**
-     * Ez az eljárás feltölti az intervellum rendszereket, továbbá a header részt is kitölti.
-     * Mivel az intervallumok feltöltéséhez a Nodokat ki kell keresni, 
-     * így célszerű ebben a lépésben a headert is kitölteni (különben újból ki kell keresni a nodot).
-     * @param dimensions a kockában lévő dimenziók listája
+     * Ez az eljárás feltölti az intervellum rendszereket, továbbá a header
+     * részt is kitölti. Mivel az intervallumok feltöltéséhez a Nodokat ki kell
+     * keresni, így célszerű ebben a lépésben a headert is kitölteni (különben
+     * újból ki kell keresni a nodot).
+     *
+     * @param dimensions lowerIndexes kockában lévő dimenziók listája
      */
     private void uploadIntervalAndHeader(List<Dimension> dimensions) {
-        int hierarchySize = dimensions.size();
-        this.header = new Node[hierarchySize];
+        int dimensionSize = dimensions.size();
+        this.header = new Node[dimensionSize];
 
-        List< int[]> OaList = new ArrayList<>();
-        List< int[]> ObList = new ArrayList<>();
-        List< int[]> aList = new ArrayList<>();
-        List< int[]> bList = new ArrayList<>();
+        List< int[]> offlineCalculatedLowerIndexesList = new ArrayList<>();
+        List< int[]> offlineCalculatedUpperIndexesList = new ArrayList<>();
+        List< int[]> lowerIndexesList = new ArrayList<>();
+        List< int[]> upperIndexesList = new ArrayList<>();
 
-        for (int i = 0; i < hierarchySize; i++) {
+        for (int i = 0; i < dimensionSize; i++) {
             Dimension dimension = dimensions.get(i);
             Node n = baseVector.get(i);
 
-            this.header[i] = baseVector.get(i);
+            this.header[i] = n;
             if (dimension.isOfflineCalculated()) {
-                OaList.add(n.getIntervalsLowerIndexes());
-                ObList.add(n.getIntervalsUpperIndexes());
+                offlineCalculatedLowerIndexesList.add(n.getIntervalsLowerIndexes());
+                offlineCalculatedUpperIndexesList.add(n.getIntervalsUpperIndexes());
             } else {
-                aList.add(n.getIntervalsLowerIndexes());
-                bList.add(n.getIntervalsUpperIndexes());
+                lowerIndexesList.add(n.getIntervalsLowerIndexes());
+                upperIndexesList.add(n.getIntervalsUpperIndexes());
             }
         }
 
-        int OaSize = OaList.size();
-        Oa = new int[OaSize][];
-        for (int i = 0; i < OaSize; i++) {
-            Oa[i] = OaList.get(i);
+        int offlineCalculatedLowerIndexesSize = offlineCalculatedLowerIndexesList.size();
+        offlineCalculatedLowerIndexes = new int[offlineCalculatedLowerIndexesSize][];
+        for (int i = 0; i < offlineCalculatedLowerIndexesSize; i++) {
+            offlineCalculatedLowerIndexes[i] = offlineCalculatedLowerIndexesList.get(i);
         }
 
-        int ObSize = ObList.size();
-        Ob = new int[ObSize][];
-        for (int i = 0; i < ObSize; i++) {
-            Ob[i] = ObList.get(i);
+        int offlineCalculatedUpperIndexesSize = offlineCalculatedUpperIndexesList.size();
+        offlineCalculatedUpperIndexes = new int[offlineCalculatedUpperIndexesSize][];
+        for (int i = 0; i < offlineCalculatedUpperIndexesSize; i++) {
+            offlineCalculatedUpperIndexes[i] = offlineCalculatedUpperIndexesList.get(i);
         }
 
-        int aSize = aList.size();
-        a = new int[aSize][];
-        for (int i = 0; i < aSize; i++) {
-            a[i] = aList.get(i);            
+        int lowerIndexesSize = lowerIndexesList.size();
+        lowerIndexes = new int[lowerIndexesSize][];
+        for (int i = 0; i < lowerIndexesSize; i++) {
+            lowerIndexes[i] = lowerIndexesList.get(i);
         }
-        
-        int bSize = aList.size();
-        b = new int[bSize][];
-        for (int i = 0; i < bSize; i++) {
-            b[i] = bList.get(i);
+
+        int upperIndexesSize = lowerIndexesList.size();
+        upperIndexes = new int[upperIndexesSize][];
+        for (int i = 0; i < upperIndexesSize; i++) {
+            upperIndexes[i] = upperIndexesList.get(i);
         }
 
     }
 
     /**
      * Ez az érték a megkapott valós measure értékeket a kívánt formátumra
-     * alakítja. Ehhez a kalkulált measure-ök értékét meg kell határozni, majd
-     * a valós és kalkulált measure-ok sorrendjét a meta-ban (Measures osztály)
+     * alakítja. Ehhez a kalkulált measure-ök értékét meg kell határozni, majd a
+     * valós és kalkulált measure-ok sorrendjét a meta-ban (Measures osztály)
      * meghatározott sorrendbe kell rendezni és végezetül a double értékeket
      * vesszővel szeparált String értékekre kell alakítani.
      *
      * @param rawValues valós measure-ök tömbje
-     * @return a megkonstruált szting tömb, amelyben minden measure megfelelő
-     * sorrendben szerepel.
+     * @return lowerIndexes megkonstruált szting tömb, amelyben minden measure megfelelő
+ sorrendben szerepel.
      */
     private double[] getAllMeasureAsString(double[] rawValues, Cube cube) {
         List<AbstractMeasure> measures = cube.getMeasures();
@@ -122,15 +128,15 @@ public class Problem {
         double[] result = new double[measureCnt];
 
         for (int i = 0; i < measureCnt; i++) {
-            AbstractMeasure member = measures.get(i);
+            AbstractMeasure measure = measures.get(i);
 
-            if (member.isCalculatedMember()) {
-                String calculatedFormula = ((CalculatedMeasure) member).getFormula();
+            if (measure.isCalculated()) {
+                String calculatedFormula = ((CalculatedMeasure) measure).getFormula();
                 String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula, cube);
                 double d = PostfixCalculator.calculate(formulaWithIndex, rawValues);
                 result[i] = d;
             } else {
-                String memberUniqueName = member.getName();
+                String memberUniqueName = measure.getName();
                 int idx = cube.getRealMeasureIdxByName(memberUniqueName);
                 result[i] = rawValues[idx];
             }
@@ -139,12 +145,12 @@ public class Problem {
     }
 
     /**
-     * Ez az eljárás a Calculated formulában lévő measure neveket lecseréli azok
-     * Cells -béli oszlopindexére
+     * Ez az eljárás lowerIndexes Calculated formulában lévő measure neveket lecseréli azok
+ Cells -béli oszlopindexére
      *
      * @param calculatedFormula az átalakítandó formula
      * @return ez eredeti formulanak egy olyan változata, amely split-elve van
-     * szőközönként és a measure nevek helyett azok indexei található
+ szőközönként és lowerIndexes measure nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
     private String[] replaceMeasureNameWithIndex(String calculatedFormula, Cube cube) throws NumberFormatException {

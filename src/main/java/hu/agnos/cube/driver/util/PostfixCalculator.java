@@ -31,7 +31,12 @@ public class PostfixCalculator {
     private static String[] replaceIndexToValue(String[] inputs, double[] measures) {
         String[] outputs = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
-            if (inputs[i].equals(ADD) || inputs[i].equals(SUB) || inputs[i].equals(MUL) || inputs[i].equals(DIV) || inputs[i].equals(SQU) || inputs[i].equals(ABS)) {
+            if (inputs[i].equals(ADD) 
+                    || inputs[i].equals(SUB) 
+                    || inputs[i].equals(MUL) 
+                    || inputs[i].equals(DIV) 
+                    || inputs[i].equals(SQU) 
+                    || inputs[i].equals(ABS)) {
                 outputs[i] = inputs[i];
             } else if (inputs[i].contains(".")) {
                 double d = Double.parseDouble(inputs[i]);
