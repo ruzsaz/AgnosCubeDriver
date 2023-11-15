@@ -1,4 +1,4 @@
-package hu.agnos.cube.driver.zolikaokos;
+package hu.agnos.cube.driver.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import gnu.trove.list.array.TIntArrayList;
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
 import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.driver.util.IntervalAlgorithms;
 import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
@@ -66,7 +67,7 @@ public abstract class Problem {
                                                         int maxDefault) {
         double[] result;
         // Az olapos dimenziókkal való metszőintervallum megállapítása.
-        int[] offlineCalculatedIntersection = Algorithms.monotonicIntersection(offlineCalculatedLowerIndexes,
+        int[] offlineCalculatedIntersection = IntervalAlgorithms.monotonicIntersection(offlineCalculatedLowerIndexes,
                 offlineCalculatedUpperIndexes, 0, maxDefault);
 
         // A menet közben aggregálandó intervallumok elmetszése az olap-sávval.
@@ -74,7 +75,7 @@ public abstract class Problem {
         int[] minTrimIndex = new int[numberOfOnTheFlyDimensions];
         int[] maxTrimIndex = new int[numberOfOnTheFlyDimensions];
         for (int d = 0; d < numberOfOnTheFlyDimensions; d++) {
-            int[] trimIndexes = Algorithms.trimIntervals(lowerIndexes[d],
+            int[] trimIndexes = IntervalAlgorithms.trimIntervals(lowerIndexes[d],
                     upperIndexes[d],
                     offlineCalculatedIntersection[0],
                     offlineCalculatedIntersection[1]);
@@ -82,7 +83,7 @@ public abstract class Problem {
             maxTrimIndex[d] = trimIndexes[1];
         }
         // Menet közben aggregálandó intervallumok metszete.
-        return Algorithms.intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
+        return IntervalAlgorithms.intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
     }
 
     abstract ResultElement compute();

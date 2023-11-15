@@ -1,4 +1,4 @@
-package hu.agnos.cube.driver.zolikaokos;
+package hu.agnos.cube.driver.service;
 
 import java.util.ArrayList;
 import java.util.List;

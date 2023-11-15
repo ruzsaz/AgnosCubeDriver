@@ -1,4 +1,4 @@
-package hu.agnos.cube.driver.zolikaokos;
+package hu.agnos.cube.driver.service;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.driver.util.IntervalAlgorithms;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
 /**
@@ -63,7 +64,7 @@ public class CountDistinctProblem extends Problem {
         int iMax = nodeLowerIndexes.length;
         for (int i = 0; i < iMax; i++) {
             for (int j = nodeLowerIndexes[i]; j <= nodeUpperIndexes[i]; j++) {
-                if (Algorithms.isIntervalSystemContains(lowerIndexes, upperIndexes, j)) {
+                if (IntervalAlgorithms.isIntervalSystemContains(lowerIndexes, upperIndexes, j)) {
                     return true;
                 }
             }

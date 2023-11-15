@@ -1,12 +1,12 @@
-package hu.agnos.cube.driver.zolikaokos;
+package hu.agnos.cube.driver.util;
 
 import java.util.Arrays;
 
 import gnu.trove.list.array.TIntArrayList;
 
-public final class Algorithms {
+public final class IntervalAlgorithms {
 
-    private Algorithms() {
+    private IntervalAlgorithms() {
     }
 
     /**
@@ -32,7 +32,7 @@ public final class Algorithms {
      * @param value The value to check
      * @return True if the value is contained, false if not
      */
-    protected static boolean isIntervalSystemContains(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, int value) {
+    public static boolean isIntervalSystemContains(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, int value) {
         int index = lowerIndexes.binarySearch(value);
         if (index > 0) {
             return true;
@@ -74,7 +74,7 @@ public final class Algorithms {
         for (int d = 0; d < lowerIndexes.length; d++) {
             int[] currentLower = lowerIndexes[d];
             int[] currentUpper = upperIndexes[d];
-            int index = Algorithms.getThisOrBiggerIndex(currentUpper, min);
+            int index = IntervalAlgorithms.getThisOrBiggerIndex(currentUpper, min);
             if (index < currentLower.length && currentLower[index] <= max) {
                 min = Math.max(currentLower[index], min);
                 max = Math.min(currentUpper[index], max);
@@ -169,8 +169,8 @@ public final class Algorithms {
             return null;
         }
 
-        int minIndex = Algorithms.getThisOrBiggerIndex(upperIndexes, min);
-        int maxIndex = Algorithms.getThisOrSmallerIndex(lowerIndexes, max);
+        int minIndex = IntervalAlgorithms.getThisOrBiggerIndex(upperIndexes, min);
+        int maxIndex = IntervalAlgorithms.getThisOrSmallerIndex(lowerIndexes, max);
 
         if (minIndex > maxIndex) {
             return new int[]{0, -1}; // Üres a válasz

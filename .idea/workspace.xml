@@ -4,16 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7af414f5-b1b7-4789-82da-10064716e141" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/SumProblem.java" afterDir="false" />
+    <list default="true" id="7af414f5-b1b7-4789-82da-10064716e141" name="Changes" comment="Count distinct calculation, but still not tested">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/util/SetFunctions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/util/SetFunctions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/AbstractAggregateAlgorithms.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/CountDistinctAggregateAlgorithms.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/DataRetriever.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/DataRetriever.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/Problem.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/SumAggregateAlgorithms.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/Algorithms.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/hu/agnos/cube/driver/zolikaokos/AlgorithmsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/hu/agnos/cube/driver/zolikaokos/AlgorithmsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/Algorithms.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/util/IntervalAlgorithms.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/CountDistinctProblem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/DataRetriever.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/DataRetriever.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/Problem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/Problem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/ProblemFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/ProblemFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/zolikaokos/SumProblem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/SumProblem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/hu/agnos/cube/driver/zolikaokos/AlgorithmsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/hu/agnos/cube/driver/service/IntervalAlgorithmsTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +31,9 @@
   </component>
   <component name="MavenRunner">
     <option name="delegateBuildToMaven" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -65,6 +67,15 @@
       <option name="presentableId" value="Default" />
       <updated>1692706545516</updated>
     </task>
+    <task id="LOCAL-00001" summary="Count distinct calculation, but still not tested">
+      <option name="closed" value="true" />
+      <created>1700082863833</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1700082863833</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -77,5 +88,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Count distinct calculation, but still not tested" />
+    <option name="LAST_COMMIT_MESSAGE" value="Count distinct calculation, but still not tested" />
   </component>
 </project>
