@@ -16,12 +16,13 @@ public class SumProblem extends Problem {
 
     protected SumProblem(Cube cube, int drillVectorId, List<Node> baseVector) {
         super(cube, drillVectorId, baseVector);
-        initForCalculations(cube.getDimensions().size());
+        int numberOfDataRows = cube.getCells().getCells()[0].length;
+        initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
 
     public ResultElement compute() {
-        TIntArrayList[] calculateSumNyuszival2 = Problem.getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
-                lowerIndexes, upperIndexes, cube.getCells().getCells()[0].length - 1);
+        TIntArrayList[] calculateSumNyuszival2 = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
+                lowerIndexes, upperIndexes);
         double[] calculatedValues = SumProblem.getContainedSumNyuszival2(calculateSumNyuszival2[0], calculateSumNyuszival2[1], cube);
         double[] measureValues = getAllMeasureAsString(calculatedValues);
         return new ResultElement(Problem.translateNodes(header), measureValues, drillVectorId);

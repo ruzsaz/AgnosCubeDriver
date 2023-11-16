@@ -34,8 +34,11 @@ public final class IntervalAlgorithms {
      */
     public static boolean isIntervalSystemContains(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, int value) {
         int index = lowerIndexes.binarySearch(value);
-        if (index > 0) {
+        if (index >= 0) {
             return true;
+        }
+        if (index == -1) {
+            return false;
         }
         return upperIndexes.getQuick(-index - 2) >= value;
     }

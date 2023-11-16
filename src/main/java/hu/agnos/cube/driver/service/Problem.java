@@ -25,6 +25,7 @@ public abstract class Problem {
     protected int[][] lowerIndexes;
     protected int[][] upperIndexes;
     protected Node[] header;
+    protected int numberOfRows; // Number of rows in the cube's dataTable
 
     protected Problem(Cube cube, int drillVectorId, List<Node> baseVector) {
         this.cube = cube;
@@ -56,19 +57,16 @@ public abstract class Problem {
      *         the index of the dimension, second is the index of the interval)
      * @param upperIndexes Array of the upper indexes in the on-the-fly aggregating dimensions (First index is
      *         the index of the dimension, second is the index of the interval)
-     * @param maxDefault Maximal index in the data cube (required for the answer when there are no indexes at
-     *         all only)
      * @return The monotonic increasing lower indexes and corresponding upper indexes in an array of 2 dimensions
      */
-    protected static TIntArrayList[] getSourceIntervals(int[][] offlineCalculatedLowerIndexes,
+    protected TIntArrayList[] getSourceIntervals(int[][] offlineCalculatedLowerIndexes,
                                                         int[][] offlineCalculatedUpperIndexes,
                                                         int[][] lowerIndexes,
-                                                        int[][] upperIndexes,
-                                                        int maxDefault) {
+                                                        int[][] upperIndexes) {
         double[] result;
         // Az olapos dimenziókkal való metszőintervallum megállapítása.
         int[] offlineCalculatedIntersection = IntervalAlgorithms.monotonicIntersection(offlineCalculatedLowerIndexes,
-                offlineCalculatedUpperIndexes, 0, maxDefault);
+                offlineCalculatedUpperIndexes, 0, numberOfRows - 1);
 
         // A menet közben aggregálandó intervallumok elmetszése az olap-sávval.
         int numberOfOnTheFlyDimensions = lowerIndexes.length;
@@ -93,7 +91,8 @@ public abstract class Problem {
      * feltöltéséhez a Nodokat ki kell keresni, így célszerű ebben a lépésben a headert is kitölteni (különben újból ki
      * kell keresni a nodot).
      */
-    void initForCalculations(int numberOfDimensionsToUse) {
+    void initForCalculations(int numberOfDimensionsToUse, int numberOfDataRows) {
+        this.numberOfRows = numberOfDataRows;
         List<Dimension> dimensions = cube.getDimensions();
         this.header = new Node[numberOfDimensionsToUse];
 
@@ -139,7 +138,6 @@ public abstract class Problem {
         for (int i = 0; i < upperIndexesSize; i++) {
             upperIndexes[i] = upperIndexesList.get(i);
         }
-
     }
 
     /**
@@ -161,7 +159,7 @@ public abstract class Problem {
 
             if (measure.isCalculated()) {
                 String calculatedFormula = ((CalculatedMeasure) measure).getFormula();
-                String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula, cube);
+                String[] formulaWithIndex = replaceMeasureNameWithIndex(calculatedFormula);
                 double d = PostfixCalculator.calculate(formulaWithIndex, rawValues);
                 result[i] = d;
             } else {
@@ -181,7 +179,7 @@ public abstract class Problem {
      *         nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
-    private String[] replaceMeasureNameWithIndex(String calculatedFormula, Cube cube) throws NumberFormatException {
+    private String[] replaceMeasureNameWithIndex(String calculatedFormula) throws NumberFormatException {
         String[] calculatedFormulaSegments = calculatedFormula.split(" ");
         String[] result = new String[calculatedFormulaSegments.length];
         for (int i = 0; i < calculatedFormulaSegments.length; i++) {
