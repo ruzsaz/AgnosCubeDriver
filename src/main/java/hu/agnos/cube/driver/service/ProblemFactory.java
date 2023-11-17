@@ -34,8 +34,14 @@ public final class ProblemFactory {
      * @param baseVector Coordinate values to retrieve data from
      * @return The solvable problem, either a SumProblem or a CountDistinctProblem
      */
-    public Problem createProblem(int drillVectorId, List<Node> baseVector) {
-        if (isCountDistinctType) {
+    public Problem createProblem(int drillVectorId, List<Node> baseVector, int version) {
+        if (isCountDistinctType && version == 2) {
+            return new CountDistinctProblem2(cube, drillVectorId, baseVector);
+        }
+        if (isCountDistinctType && version == 3) {
+            return new CountDistinctProblem2(cube, drillVectorId, baseVector);
+        }
+        if (isCountDistinctType && version == 1) {
             return new CountDistinctProblem(cube, drillVectorId, baseVector);
         } else {
             return new SumProblem(cube, drillVectorId, baseVector);
