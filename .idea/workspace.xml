@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7af414f5-b1b7-4789-82da-10064716e141" name="Changes" comment="CountDistinct working">
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/CubeHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/CubeHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/CountDistinctProblem3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/ProblemFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/ProblemFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/SumProblem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hu/agnos/cube/driver/service/SumProblem.java" afterDir="false" />
+    <list default="true" id="7af414f5-b1b7-4789-82da-10064716e141" name="Changes" comment="new cube structure">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,15 +37,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "multi__cube",
-    "last_opened_file_path": "/home/parisek/AgnosProjects/AgnosCubeDriver",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.runner"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;multi__cube&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/parisek/AgnosProjects/AgnosCubeDriver&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.runner&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="hu.agnos.cube.driver.util" />
