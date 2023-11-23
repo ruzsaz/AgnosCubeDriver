@@ -3,6 +3,9 @@ package hu.agnos.cube.driver.service;
 import java.util.List;
 
 import hu.agnos.cube.Cube;
+import hu.agnos.cube.ClassicalCube;
+import hu.agnos.cube.CountDistinctCube;
+import hu.agnos.cube.CubeType;
 import hu.agnos.cube.dimension.Node;
 
 /**
@@ -13,8 +16,7 @@ import hu.agnos.cube.dimension.Node;
 public final class ProblemFactory {
 
     private final Cube cube;
-    private final boolean isCountDistinctType;
-
+    
     /**
      * Creates a factory that can create Problems.
      *
@@ -22,7 +24,6 @@ public final class ProblemFactory {
      */
     public ProblemFactory(Cube cube) {
         this.cube = cube;
-        this.isCountDistinctType = cube.getMeasures().get(0).isVirtual();
     }
 
     /**
@@ -35,16 +36,17 @@ public final class ProblemFactory {
      * @return The solvable problem, either a SumProblem or a CountDistinctProblem
      */
     public Problem createProblem(int drillVectorId, List<Node> baseVector, int version) {
-        if (isCountDistinctType && version == 2) {
-            return new CountDistinctProblem2(cube, drillVectorId, baseVector);
+       
+        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 2) {
+            return new CountDistinctProblem2((CountDistinctCube)cube, drillVectorId, baseVector);
         }
-        if (isCountDistinctType && version == 3) {
-            return new CountDistinctProblem2(cube, drillVectorId, baseVector);
+        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 3) {
+            return new CountDistinctProblem2((CountDistinctCube)cube, drillVectorId, baseVector);
         }
-        if (isCountDistinctType && version == 1) {
-            return new CountDistinctProblem(cube, drillVectorId, baseVector);
+        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 1) {
+            return new CountDistinctProblem((CountDistinctCube)cube, drillVectorId, baseVector);
         } else {
-            return new SumProblem(cube, drillVectorId, baseVector);
+            return new SumProblem((ClassicalCube)cube, drillVectorId, baseVector);
         }
     }
 
