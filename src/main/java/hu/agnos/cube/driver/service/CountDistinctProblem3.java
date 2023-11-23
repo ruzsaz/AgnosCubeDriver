@@ -17,12 +17,10 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
  */
 public class CountDistinctProblem3 extends Problem {
 
-    // TODO: tesztelni, hogy tényleg az utolsó dimenzió-e a countdistinctdime.
     protected CountDistinctProblem3(CountDistinctCube cube, int drillVectorId, List<Node> baseVector) {
         super(cube, drillVectorId, baseVector);
-        Dimension countDistinctDimension = cube.getDimensions().get(cube.getDimensions().size() - 1);
-        int numberOfDataRows = countDistinctDimension.getNode(0, 0).getIntervalsUpperIndexes()[0];
-        initForCalculations(cube.getDimensions().size() - 1, numberOfDataRows);
+        int numberOfDataRows = cube.getCells().length;
+        initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
 
     public ResultElement compute() {
@@ -43,13 +41,14 @@ public class CountDistinctProblem3 extends Problem {
      * @return An array with only 1 element: the number of distinct nodes in the interval-system
      */
     private double[] countDistinctNodes(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Node[] nodes) {
+        int[][]rows = ((CountDistinctCube) cube).getCells();
         int result = 0;
         int nodeLength = nodes.length; //Math.min(nodes.length, 10);
         boolean[] collector = new boolean[120000];
         for (int index = 0; index < lowerIndexes.size(); index++) {
             int iMax = upperIndexes.getQuick(index) + 1;
             for (int i = lowerIndexes.getQuick(index); i < iMax; i++) {
-                int[] row = ((CountDistinctCube) cube).getCells()[i];
+                int[] row = rows[i];
                 for (int value : row) {
                     collector[value] = true;
                 }

@@ -20,12 +20,10 @@ import java.util.Arrays;
  */
 public class CountDistinctProblem2 extends Problem {
 
-    // TODO: tesztelni, hogy tényleg az utolsó dimenzió-e a countdistinctdime.
     protected CountDistinctProblem2(CountDistinctCube cube, int drillVectorId, List<Node> baseVector) {
         super(cube, drillVectorId, baseVector);
-        Dimension countDistinctDimension = cube.getDimensions().get(cube.getDimensions().size() - 1);
-        int numberOfDataRows = countDistinctDimension.getNode(0, 0).getIntervalsUpperIndexes()[0];
-        initForCalculations(cube.getDimensions().size() - 1, numberOfDataRows);
+        int numberOfDataRows = cube.getCells().length;
+        initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
 
     public ResultElement compute() {
@@ -47,13 +45,14 @@ public class CountDistinctProblem2 extends Problem {
      * interval-system
      */
     private double[] countDistinctNodes(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Node[] nodes) {
-        int result = 0;
-        int nodeLength = nodes.length; //Math.min(nodes.length, 10);
-        Set<Integer> collector = new HashSet<>(10000);
-        for (int index = 0; index < lowerIndexes.size(); index++) {
+        Set<Integer> collector = new HashSet<>(1000);
+        int[][] cells = ((CountDistinctCube) cube).getCells();
+        int indexMax = lowerIndexes.size();
+        for (int index = 0; index < indexMax; index++) {
             int iMax = upperIndexes.getQuick(index) + 1;
             for (int i = lowerIndexes.getQuick(index); i < iMax; i++) {
-                int[] row = ((CountDistinctCube) cube).getCells()[i];
+                int[] row = cells[i];
+                Arrays.stream(row).distinct().count();
                 for (int value : row) {
                     collector.add(value);
                 }
