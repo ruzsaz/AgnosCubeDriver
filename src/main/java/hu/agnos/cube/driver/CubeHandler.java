@@ -3,7 +3,7 @@ package hu.agnos.cube.driver;
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
 import hu.agnos.cube.dimension.Node;
-import hu.agnos.cube.measure.Cells;
+
 import lombok.Getter;
 
 /**
@@ -33,14 +33,7 @@ public class CubeHandler {
     }
 
     public void printCells(Cube cube) {
-        Cells c = cube.getCells();
-        float[][] cArray = c.getCells();
-        for (int j = 0; j < cArray[0].length; j++) {
-            for (float[] doubles : cArray) {
-                System.out.print("\t" + doubles[j]);
-            }
-            System.out.println();
-        }
+        cube.printCells();
     }
 
     public int getDimensionIndexByName(String name) {

@@ -5,6 +5,7 @@ import java.util.List;
 import gnu.trove.list.array.TIntArrayList;
 
 import hu.agnos.cube.Cube;
+import hu.agnos.cube.ClassicalCube;
 import hu.agnos.cube.dimension.Node;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
@@ -14,22 +15,22 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
  */
 public class SumProblem extends Problem {
 
-    protected SumProblem(Cube cube, int drillVectorId, List<Node> baseVector) {
+    protected SumProblem(ClassicalCube cube, int drillVectorId, List<Node> baseVector) {
         super(cube, drillVectorId, baseVector);
-        int numberOfDataRows = cube.getCells().getCells()[0].length;
+        int numberOfDataRows = cube.getCells()[0].length;
         initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
 
     public ResultElement compute() {
         TIntArrayList[] calculateSumNyuszival2 = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);
-        double[] calculatedValues = SumProblem.getContainedSumNyuszival2(calculateSumNyuszival2[0], calculateSumNyuszival2[1], cube);
+        double[] calculatedValues = SumProblem.getContainedSumNyuszival2(calculateSumNyuszival2[0], calculateSumNyuszival2[1], (ClassicalCube)cube);
         double[] measureValues = getAllMeasureAsString(calculatedValues);
         return new ResultElement(Problem.translateNodes(header), measureValues, drillVectorId);
     }
 
-    private static double[] getContainedSumNyuszival2(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Cube cube) {
-        float[][] facts = cube.getCells().getCells();
+    private static double[] getContainedSumNyuszival2(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, ClassicalCube cube) {
+        float[][] facts = cube.getCells();
         int numberOfFacts = facts.length;
         double[] result = new double[numberOfFacts];
         int intvIndexMax = lowerIndexes.size();

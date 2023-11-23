@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import gnu.trove.list.array.TIntArrayList;
+import hu.agnos.cube.CountDistinctCube;
 
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
@@ -17,7 +18,7 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
 public class CountDistinctProblem3 extends Problem {
 
     // TODO: tesztelni, hogy tényleg az utolsó dimenzió-e a countdistinctdime.
-    protected CountDistinctProblem3(Cube cube, int drillVectorId, List<Node> baseVector) {
+    protected CountDistinctProblem3(CountDistinctCube cube, int drillVectorId, List<Node> baseVector) {
         super(cube, drillVectorId, baseVector);
         Dimension countDistinctDimension = cube.getDimensions().get(cube.getDimensions().size() - 1);
         int numberOfDataRows = countDistinctDimension.getNode(0, 0).getIntervalsUpperIndexes()[0];
@@ -48,7 +49,10 @@ public class CountDistinctProblem3 extends Problem {
         for (int index = 0; index < lowerIndexes.size(); index++) {
             int iMax = upperIndexes.getQuick(index) + 1;
             for (int i = lowerIndexes.getQuick(index); i < iMax; i++) {
-                collector[cube.getKecske()[i]] = true;
+                int[] row = ((CountDistinctCube) cube).getCells()[i];
+                for (int value : row) {
+                    collector[value] = true;
+                }
             }
         }
 
