@@ -42,10 +42,10 @@ public class CountDistinctProblem3 extends Problem {
      */
     private double[] countDistinctNodes(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Node[] nodes) {
         int[][]rows = ((CountDistinctCube) cube).getCells();
-        int result = 0;
-        int nodeLength = nodes.length; //Math.min(nodes.length, 10);
-        boolean[] collector = new boolean[120000];
-        for (int index = 0; index < lowerIndexes.size(); index++) {
+        int maxCountDistinctElement = ((CountDistinctCube) cube).getMaxCountDistinctElement();
+        boolean[] collector = new boolean[maxCountDistinctElement + 1];
+        int size = lowerIndexes.size();
+        for (int index = 0; index < size; index++) {
             int iMax = upperIndexes.getQuick(index) + 1;
             for (int i = lowerIndexes.getQuick(index); i < iMax; i++) {
                 int[] row = rows[i];
@@ -56,14 +56,12 @@ public class CountDistinctProblem3 extends Problem {
         }
 
         int trueCount = 0;
-        for (int i=0; i<collector.length; i++) {
+        for (int i = 0; i < maxCountDistinctElement + 1; i++) {
             if (collector[i]) {
                 trueCount++;
             }
         }
         return new double[]{trueCount};
     }
-
-
 
 }

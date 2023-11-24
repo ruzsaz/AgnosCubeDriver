@@ -41,7 +41,7 @@ public final class ProblemFactory {
             return new CountDistinctProblem2((CountDistinctCube)cube, drillVectorId, baseVector);
         }
         if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 3) {
-            return new CountDistinctProblem2((CountDistinctCube)cube, drillVectorId, baseVector);
+            return new CountDistinctProblem3((CountDistinctCube)cube, drillVectorId, baseVector);
         }
         if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 1) {
             return new CountDistinctProblem((CountDistinctCube)cube, drillVectorId, baseVector);

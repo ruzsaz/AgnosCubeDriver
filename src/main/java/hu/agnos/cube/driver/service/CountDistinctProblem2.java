@@ -35,30 +35,34 @@ public class CountDistinctProblem2 extends Problem {
     }
 
     /**
-     * Couunts the distinct nodes from a node-set inside an interval-system. The
-     * intervals within the system should be ordered increasingly.
+     * Couunts the distinct nodes from a node-set inside an interval-system. The intervals within the system should be
+     * ordered increasingly.
      *
      * @param lowerIndexes List of the intervals' lower indexes
      * @param upperIndexes List of the intervals' upper indexes
      * @param nodes Array of nodes to consider
-     * @return An array with only 1 element: the number of distinct nodes in the
-     * interval-system
+     * @return An array with only 1 element: the number of distinct nodes in the interval-system
      */
     private double[] countDistinctNodes(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, Node[] nodes) {
-        Set<Integer> collector = new HashSet<>(1000);
-        int[][] cells = ((CountDistinctCube) cube).getCells();
-        int indexMax = lowerIndexes.size();
-        for (int index = 0; index < indexMax; index++) {
+        int[][]rows = ((CountDistinctCube) cube).getCells();
+        int maxCountDistinctElement = ((CountDistinctCube) cube).getMaxCountDistinctElement();
+        boolean[] collector = new boolean[maxCountDistinctElement + 1];
+        int size = lowerIndexes.size();
+        int trueCount = 0;
+        for (int index = 0; index < size; index++) {
             int iMax = upperIndexes.getQuick(index) + 1;
             for (int i = lowerIndexes.getQuick(index); i < iMax; i++) {
-                int[] row = cells[i];
-                Arrays.stream(row).distinct().count();
+                int[] row = rows[i];
                 for (int value : row) {
-                    collector.add(value);
+                    if (!collector[value]) {
+                        collector[value] = true;
+                        trueCount++;
+                    }
                 }
             }
         }
-        return new double[]{collector.size()};
+
+        return new double[]{trueCount};
     }
 
 }
