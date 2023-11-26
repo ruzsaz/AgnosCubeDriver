@@ -18,7 +18,6 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
 public abstract class Problem {
 
     protected final Cube cube;
-    protected final int drillVectorId;
     private final List<Node> baseVector;
     protected int[][] offlineCalculatedLowerIndexes;
     protected int[][] offlineCalculatedUpperIndexes;
@@ -27,9 +26,8 @@ public abstract class Problem {
     protected Node[] header;
     protected int numberOfRows; // Number of rows in the cube's dataTable
 
-    protected Problem(Cube cube, int drillVectorId, List<Node> baseVector) {
+    protected Problem(Cube cube, List<Node> baseVector) {
         this.cube = cube;
-        this.drillVectorId = drillVectorId;
         this.baseVector = baseVector;
     }
 

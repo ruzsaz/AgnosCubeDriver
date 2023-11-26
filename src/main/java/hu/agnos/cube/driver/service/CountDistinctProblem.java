@@ -24,8 +24,8 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
  */
 public class CountDistinctProblem extends Problem {
 
-    protected CountDistinctProblem(CountDistinctCube cube, int drillVectorId, List<Node> baseVector) {
-        super(cube, drillVectorId, baseVector);
+    protected CountDistinctProblem(CountDistinctCube cube, List<Node> baseVector) {
+        super(cube, baseVector);
         int numberOfDataRows = cube.getCells().length;
         initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
@@ -35,7 +35,7 @@ public class CountDistinctProblem extends Problem {
                 lowerIndexes, upperIndexes);
         Node[] lastDimNodes = cube.getDimensions().get(cube.getDimensions().size() - 1).getNodes()[1];
         double[] calculatedValues = countDistinctNodes(sourceIntervals[0], sourceIntervals[1], lastDimNodes);
-        return new ResultElement(Problem.translateNodes(header), calculatedValues, drillVectorId);
+        return new ResultElement(Problem.translateNodes(header), calculatedValues);
     }
 
     /**

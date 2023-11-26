@@ -15,8 +15,8 @@ import hu.agnos.cube.meta.resultDto.ResultElement;
  */
 public class SumProblem extends Problem {
 
-    protected SumProblem(ClassicalCube cube, int drillVectorId, List<Node> baseVector) {
-        super(cube, drillVectorId, baseVector);
+    protected SumProblem(ClassicalCube cube, List<Node> baseVector) {
+        super(cube, baseVector);
         int numberOfDataRows = cube.getCells()[0].length;
         initForCalculations(cube.getDimensions().size(), numberOfDataRows);
     }
@@ -26,7 +26,7 @@ public class SumProblem extends Problem {
                 lowerIndexes, upperIndexes);
         double[] calculatedValues = SumProblem.getContainedSumNyuszival2(calculateSumNyuszival2[0], calculateSumNyuszival2[1], (ClassicalCube)cube);
         double[] measureValues = getAllMeasureAsString(calculatedValues);
-        return new ResultElement(Problem.translateNodes(header), measureValues, drillVectorId);
+        return new ResultElement(Problem.translateNodes(header), measureValues);
     }
 
     private static double[] getContainedSumNyuszival2(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, ClassicalCube cube) {

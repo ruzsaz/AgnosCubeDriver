@@ -35,18 +35,18 @@ public final class ProblemFactory {
      * @param baseVector Coordinate values to retrieve data from
      * @return The solvable problem, either a SumProblem or a CountDistinctProblem
      */
-    public Problem createProblem(int drillVectorId, List<Node> baseVector, int version) {
+    public Problem createProblem(List<Node> baseVector, int version) {
        
         if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 2) {
-            return new CountDistinctProblem2((CountDistinctCube)cube, drillVectorId, baseVector);
+            return new CountDistinctProblem2((CountDistinctCube)cube, baseVector);
         }
         if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 3) {
-            return new CountDistinctProblem3((CountDistinctCube)cube, drillVectorId, baseVector);
+            return new CountDistinctProblem3((CountDistinctCube)cube, baseVector);
         }
         if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 1) {
-            return new CountDistinctProblem((CountDistinctCube)cube, drillVectorId, baseVector);
+            return new CountDistinctProblem((CountDistinctCube)cube, baseVector);
         } else {
-            return new SumProblem((ClassicalCube)cube, drillVectorId, baseVector);
+            return new SumProblem((ClassicalCube)cube, baseVector);
         }
     }
 
