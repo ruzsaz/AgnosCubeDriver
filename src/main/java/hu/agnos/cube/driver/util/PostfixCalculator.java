@@ -3,40 +3,33 @@ package hu.agnos.cube.driver.util;
 import java.util.Stack;
 
 /**
- *
  * @author parisek
  */
 public class PostfixCalculator {
 
-    public static final String ADD = "+";
-    public static final String SUB = "-";
-    public static final String MUL = "*";
-    public static final String DIV = "/";
-    public static final String SQU = "^";
-    public static final String ABS = "|";
-    public static final String IS_ZERO = "?";
+    private static final String ADD = "+";
+    private static final String SUB = "-";
+    private static final String MUL = "*";
+    private static final String DIV = "/";
+    private static final String SQU = "^";
+    private static final String ABS = "|";
+    private static final String IS_ZERO = "?";
 
     public static double calculate(String[] input, double[] measures) {
-        String[] formula = replaceIndexToValue(input, measures);
-        return handleCalculation(formula);
-    }
-
-    public static boolean isOperator(String s) {
-        return switch (s) {
-            case ADD, SUB, MUL, DIV, SQU, ABS, IS_ZERO -> true;
-            default -> false;
-        };
+        String[] formula = PostfixCalculator.replaceIndexToValue(input, measures);
+        return PostfixCalculator.handleCalculation(formula);
     }
 
     private static String[] replaceIndexToValue(String[] inputs, double[] measures) {
-        String[] outputs = new String[inputs.length];
-        for (int i = 0; i < inputs.length; i++) {
-            if (inputs[i].equals(ADD) 
-                    || inputs[i].equals(SUB) 
-                    || inputs[i].equals(MUL) 
-                    || inputs[i].equals(DIV) 
-                    || inputs[i].equals(SQU) 
-                    || inputs[i].equals(ABS)) {
+        int inputsLength = inputs.length;
+        String[] outputs = new String[inputsLength];
+        for (int i = 0; i < inputsLength; i++) {
+            if (inputs[i].equals(PostfixCalculator.ADD)
+                    || inputs[i].equals(PostfixCalculator.SUB)
+                    || inputs[i].equals(PostfixCalculator.MUL)
+                    || inputs[i].equals(PostfixCalculator.DIV)
+                    || inputs[i].equals(PostfixCalculator.SQU)
+                    || inputs[i].equals(PostfixCalculator.ABS)) {
                 outputs[i] = inputs[i];
             } else if (inputs[i].contains(".")) {
                 double d = Double.parseDouble(inputs[i]);
@@ -56,28 +49,28 @@ public class PostfixCalculator {
         Stack<Double> stack = new Stack<>();
         for (String s : el) {
             switch (s) {
-                case ADD:  {
+                case PostfixCalculator.ADD: {
                     operand2 = stack.pop();
                     operand1 = stack.pop();
                     double local = operand1 + operand2;
                     stack.push(local);
                     break;
                 }
-                case SUB: {
+                case PostfixCalculator.SUB: {
                     operand2 = stack.pop();
                     operand1 = stack.pop();
                     double local = operand1 - operand2;
                     stack.push(local);
                     break;
                 }
-                case MUL: {
+                case PostfixCalculator.MUL: {
                     operand2 = stack.pop();
                     operand1 = stack.pop();
                     double local = operand1 * operand2;
                     stack.push(local);
                     break;
                 }
-                case DIV:  {
+                case PostfixCalculator.DIV: {
                     operand2 = stack.pop();
                     operand1 = stack.pop();
                     double local;
@@ -89,13 +82,13 @@ public class PostfixCalculator {
                     stack.push(local);
                     break;
                 }
-                case SQU: {
+                case PostfixCalculator.SQU: {
                     operand1 = stack.pop();
                     double local = operand1 * operand1;
                     stack.push(local);
                     break;
                 }
-                case ABS:  {
+                case PostfixCalculator.ABS: {
                     operand1 = stack.pop();
                     double local;
                     if (operand1 < 0) {
@@ -106,7 +99,7 @@ public class PostfixCalculator {
                     stack.push(local);
                     break;
                 }
-                case IS_ZERO:
+                case PostfixCalculator.IS_ZERO:
                     operand3 = stack.pop();
                     operand2 = stack.pop();
                     operand1 = stack.pop();
@@ -120,5 +113,12 @@ public class PostfixCalculator {
         }
 
         return stack.pop();
+    }
+
+    public static boolean isOperator(String s) {
+        return switch (s) {
+            case ADD, SUB, MUL, DIV, SQU, ABS, IS_ZERO -> true;
+            default -> false;
+        };
     }
 }

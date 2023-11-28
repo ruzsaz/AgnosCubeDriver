@@ -24,16 +24,12 @@ public class AgnosCubeDriver {
         String path = args[0];
         Cube cube = loader(path);
         CubeHandler ch = new CubeHandler(cube.getDimensionHeader(), cube.getMeasureHeader());
-        //ch.printDims(cube);
-        //ch.printCells(cube);
-        
     }
 
     private static Cube loader(String path) {
         Cube cube = null;
         try ( FileInputStream fileIn = new FileInputStream(path); ObjectInputStream in = new ObjectInputStream(fileIn)){
             cube = (Cube) in.readObject();
-            cube.init();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(AgnosCubeDriver.class.getName()).log(Level.SEVERE, "MOLAP Cube loading failed.", ex);
         }

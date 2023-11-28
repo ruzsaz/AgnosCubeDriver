@@ -24,7 +24,7 @@ public abstract class Problem {
     protected int[][] lowerIndexes;
     protected int[][] upperIndexes;
     protected Node[] header;
-    protected int numberOfRows; // Number of rows in the cube's dataTable
+    private int numberOfRows; // Number of rows in the cube's dataTable
 
     protected Problem(Cube cube, List<Node> baseVector) {
         this.cube = cube;
@@ -40,8 +40,8 @@ public abstract class Problem {
         return result;
     }
 
-    private static NodeDTO translateNode(Node n) {
-        return new NodeDTO(n.getCode(), n.getName());
+    private static NodeDTO translateNode(Node node) {
+        return new NodeDTO(node.getCode(), node.getName());
     }
 
     /**
@@ -70,13 +70,13 @@ public abstract class Problem {
         int numberOfOnTheFlyDimensions = lowerIndexes.length;
         int[] minTrimIndex = new int[numberOfOnTheFlyDimensions];
         int[] maxTrimIndex = new int[numberOfOnTheFlyDimensions];
-        for (int d = 0; d < numberOfOnTheFlyDimensions; d++) {
-            int[] trimIndexes = IntervalAlgorithms.trimIntervals(lowerIndexes[d],
-                    upperIndexes[d],
+        for (int onTheFlyCalculatedDimIndex = 0; onTheFlyCalculatedDimIndex < numberOfOnTheFlyDimensions; onTheFlyCalculatedDimIndex++) {
+            int[] trimIndexes = IntervalAlgorithms.trimIntervals(lowerIndexes[onTheFlyCalculatedDimIndex],
+                    upperIndexes[onTheFlyCalculatedDimIndex],
                     offlineCalculatedIntersection[0],
                     offlineCalculatedIntersection[1]);
-            minTrimIndex[d] = trimIndexes[0];
-            maxTrimIndex[d] = trimIndexes[1];
+            minTrimIndex[onTheFlyCalculatedDimIndex] = trimIndexes[0];
+            maxTrimIndex[onTheFlyCalculatedDimIndex] = trimIndexes[1];
         }
         // Menet közben aggregálandó intervallumok metszete.
         return IntervalAlgorithms.intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
@@ -89,8 +89,9 @@ public abstract class Problem {
      * feltöltéséhez a Nodokat ki kell keresni, így célszerű ebben a lépésben a headert is kitölteni (különben újból ki
      * kell keresni a nodot).
      */
-    void initForCalculations(int numberOfDimensionsToUse, int numberOfDataRows) {
+    void initForCalculations(int numberOfDataRows) {
         this.numberOfRows = numberOfDataRows;
+        int numberOfDimensionsToUse = cube.getDimensions().size();
         List<Dimension> dimensions = cube.getDimensions();
         this.header = new Node[numberOfDimensionsToUse];
 
@@ -177,7 +178,7 @@ public abstract class Problem {
      *         nevek helyett azok indexei található
      * @throws NumberFormatException ha valami rosszul van formázva
      */
-    private String[] replaceMeasureNameWithIndex(String calculatedFormula) throws NumberFormatException {
+    private String[] replaceMeasureNameWithIndex(String calculatedFormula) {
         String[] calculatedFormulaSegments = calculatedFormula.split(" ");
         String[] result = new String[calculatedFormulaSegments.length];
         for (int i = 0; i < calculatedFormulaSegments.length; i++) {

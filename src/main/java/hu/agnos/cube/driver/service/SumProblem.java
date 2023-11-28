@@ -18,7 +18,7 @@ public class SumProblem extends Problem {
     protected SumProblem(ClassicalCube cube, List<Node> baseVector) {
         super(cube, baseVector);
         int numberOfDataRows = cube.getCells()[0].length;
-        initForCalculations(cube.getDimensions().size(), numberOfDataRows);
+        initForCalculations(numberOfDataRows);
     }
 
     public ResultElement compute() {

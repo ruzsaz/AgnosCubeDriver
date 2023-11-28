@@ -31,19 +31,11 @@ public final class ProblemFactory {
      * SumProblem, where data values are determined from the leaf-level nodes by summary, or a CountDistinctProblem,
      * where the single indicator is the count distinct result of the last dimension values.
      *
-     * @param drillVectorId Unique id of the drill request, used to match the answer to the right question
      * @param baseVector Coordinate values to retrieve data from
      * @return The solvable problem, either a SumProblem or a CountDistinctProblem
      */
-    public Problem createProblem(List<Node> baseVector, int version) {
-       
-        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 2) {
-            return new CountDistinctProblem2((CountDistinctCube)cube, baseVector);
-        }
-        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 3) {
-            return new CountDistinctProblem3((CountDistinctCube)cube, baseVector);
-        }
-        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType()) && version == 1) {
+    public Problem createProblem(List<Node> baseVector) {
+        if (cube.getType().equals(CubeType.COUNT_DISTINCT.getType())) {
             return new CountDistinctProblem((CountDistinctCube)cube, baseVector);
         } else {
             return new SumProblem((ClassicalCube)cube, baseVector);

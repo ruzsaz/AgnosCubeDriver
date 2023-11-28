@@ -17,31 +17,22 @@ import lombok.Getter;
  */
 public class DataRetriever {
 
-    @Getter
-    private final List<Problem> problems;
     private final List<Callable<ResultElement>> tasks;
     private final int numberOfProcessors;
+    private final ExecutorService exec;
 
     public DataRetriever() {
-        this.problems = new ArrayList<>();
         this.tasks = new ArrayList<>();
         this.numberOfProcessors = Runtime.getRuntime().availableProcessors();
-    }
-
-    public void setProblems(List<SumProblem> problems) {
-        for (SumProblem p : problems) {
-            addProblem(p);
-        }
+        this.exec = Executors.newFixedThreadPool(numberOfProcessors);
     }
 
     public void addProblem(Problem problem) {
         tasks.add(problem::compute);
-        problems.add(problem);
     }
 
    
     public List<Future<ResultElement>> computeAll() {
-        ExecutorService exec = Executors.newFixedThreadPool(numberOfProcessors);
         List<Future<ResultElement>> results = null;
         try {
             results = exec.invokeAll(tasks);

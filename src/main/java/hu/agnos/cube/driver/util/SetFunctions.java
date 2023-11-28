@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class SetFunctions {
+public final class SetFunctions {
+
+    private SetFunctions() {
+    }
 
     public static <C> List<List<C>> cartesianProduct(List<Set<C>> sets) {
         List<List<C>> newSets = new ArrayList<>();
