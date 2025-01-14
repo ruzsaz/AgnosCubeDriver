@@ -17,11 +17,16 @@ public class SumProblem extends Problem {
 
     protected SumProblem(ClassicalCube cube, List<Node> baseVector) {
         super(cube, baseVector);
-        int numberOfDataRows = cube.getCells()[0].length;
-        initForCalculations(numberOfDataRows);
+        if (cachedResult == null) {
+            int numberOfDataRows = cube.getCells()[0].length;
+            initForCalculations(numberOfDataRows);
+        }
     }
 
     public ResultElement compute() {
+        if (cachedResult != null) {
+            return new ResultElement(Problem.translateNodes(header), cachedResult);
+        }
         TIntArrayList[] calculateSumNyuszival2 = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);
         double[] calculatedValues = SumProblem.getContainedSumNyuszival2(calculateSumNyuszival2[0], calculateSumNyuszival2[1], (ClassicalCube)cube);

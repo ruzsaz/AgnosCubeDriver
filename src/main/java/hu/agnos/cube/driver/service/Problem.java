@@ -2,6 +2,7 @@ package hu.agnos.cube.driver.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import gnu.trove.list.array.TIntArrayList;
 
@@ -25,10 +26,14 @@ public abstract class Problem {
     protected int[][] upperIndexes;
     protected Node[] header;
     private int numberOfRows; // Number of rows in the cube's dataTable
+    protected double[] cachedResult;
 
     protected Problem(Cube cube, List<Node> baseVector) {
         this.cube = cube;
         this.baseVector = baseVector;
+        if (cube.getCache() != null) {
+            this.cachedResult = cube.getCache().get(baseVector);
+        }
     }
 
     static NodeDTO[] translateNodes(Node[] nodes) {
@@ -36,6 +41,16 @@ public abstract class Problem {
         NodeDTO[] result = new NodeDTO[nodeNumber];
         for (int i = 0; i < nodeNumber; i++) {
             result[i] = Problem.translateNode(nodes[i]);
+        }
+        return result;
+    }
+
+    public int getNumberOfAffectedRows() {
+        TIntArrayList[] affectedIntervals = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes, lowerIndexes, upperIndexes);
+        int numberOfintervals = affectedIntervals[0].size();
+        int result = 0;
+        for (int i = 0; i < numberOfintervals; i++) {
+            result += affectedIntervals[1].get(i) - affectedIntervals[0].get(i) + 1;
         }
         return result;
     }

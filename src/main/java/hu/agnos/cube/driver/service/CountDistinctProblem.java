@@ -15,11 +15,16 @@ public class CountDistinctProblem extends Problem {
 
     protected CountDistinctProblem(CountDistinctCube cube, List<Node> baseVector) {
         super(cube, baseVector);
-        int numberOfDataRows = cube.getCells().length;
-        initForCalculations(numberOfDataRows);
+        if (cachedResult == null) {
+            int numberOfDataRows = cube.getCells().length;
+            initForCalculations(numberOfDataRows);
+        }
     }
 
     public ResultElement compute() {
+        if (cachedResult != null) {
+            return new ResultElement(Problem.translateNodes(header), cachedResult);
+        }
         TIntArrayList[] sourceIntervals = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);
         double[] calculatedValues = countDistinctNodes(sourceIntervals[0], sourceIntervals[1]);
