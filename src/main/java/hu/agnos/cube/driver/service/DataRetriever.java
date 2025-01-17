@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import hu.agnos.cube.meta.resultDto.ResultElement;
-import lombok.Getter;
 
 /**
  *
@@ -31,7 +30,6 @@ public class DataRetriever {
         tasks.add(problem::compute);
     }
 
-   
     public List<Future<ResultElement>> computeAll() {
         List<Future<ResultElement>> results = null;
         try {

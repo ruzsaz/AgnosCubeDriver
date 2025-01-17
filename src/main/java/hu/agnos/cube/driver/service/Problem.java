@@ -1,8 +1,10 @@
 package hu.agnos.cube.driver.service;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import gnu.trove.list.array.TIntArrayList;
 
@@ -13,6 +15,7 @@ import hu.agnos.cube.driver.util.IntervalAlgorithms;
 import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
+import hu.agnos.cube.meta.queryDto.CacheKey;
 import hu.agnos.cube.meta.resultDto.NodeDTO;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
@@ -26,21 +29,33 @@ public abstract class Problem {
     protected int[][] upperIndexes;
     protected Node[] header;
     private int numberOfRows; // Number of rows in the cube's dataTable
-    protected double[] cachedResult;
+    protected Map.Entry<NodeDTO[], double[]> cachedResult;
 
     protected Problem(Cube cube, List<Node> baseVector) {
         this.cube = cube;
         this.baseVector = baseVector;
         if (cube.getCache() != null) {
-            this.cachedResult = cube.getCache().get(baseVector);
+            double[] value = cube.getCache().get(CacheKey.fromNodeList(baseVector));
+            if (value != null) {
+                this.cachedResult = new AbstractMap.SimpleEntry<>(translateNodes(baseVector), value);
+            }
         }
+    }
+
+    private static NodeDTO[] translateNodes(List<Node> nodes) {
+        int nodeNumber = nodes.size();
+        NodeDTO[] result = new NodeDTO[nodeNumber];
+        for (int i = 0; i < nodeNumber; i++) {
+            result[i] = NodeDTO.fromNode(nodes.get(i));
+        }
+        return result;
     }
 
     static NodeDTO[] translateNodes(Node[] nodes) {
         int nodeNumber = nodes.length;
         NodeDTO[] result = new NodeDTO[nodeNumber];
         for (int i = 0; i < nodeNumber; i++) {
-            result[i] = Problem.translateNode(nodes[i]);
+            result[i] = NodeDTO.fromNode(nodes[i]);
         }
         return result;
     }
@@ -55,8 +70,9 @@ public abstract class Problem {
         return result;
     }
 
-    private static NodeDTO translateNode(Node node) {
-        return new NodeDTO(node.getCode(), node.getName());
+    public int getNumberOfAffectedIntervals() {
+        TIntArrayList[] affectedIntervals = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes, lowerIndexes, upperIndexes);
+        return affectedIntervals[0].size();
     }
 
     /**
@@ -97,7 +113,7 @@ public abstract class Problem {
         return IntervalAlgorithms.intersection(offlineCalculatedIntersection[0], offlineCalculatedIntersection[1], lowerIndexes, upperIndexes, minTrimIndex, maxTrimIndex);
     }
 
-    abstract ResultElement compute();
+    public abstract ResultElement compute();
 
     /**
      * Ez az eljárás feltölti az intervellum rendszereket, továbbá a header részt is kitölti. Mivel az intervallumok

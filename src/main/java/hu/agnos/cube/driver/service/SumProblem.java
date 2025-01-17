@@ -25,7 +25,7 @@ public class SumProblem extends Problem {
 
     public ResultElement compute() {
         if (cachedResult != null) {
-            return new ResultElement(Problem.translateNodes(header), cachedResult);
+            return new ResultElement(cachedResult.getKey(), cachedResult.getValue());
         }
         TIntArrayList[] calculateSumNyuszival2 = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);
@@ -34,6 +34,14 @@ public class SumProblem extends Problem {
         return new ResultElement(Problem.translateNodes(header), measureValues);
     }
 
+    /**
+     * Calculates the sum of the facts in the given intervals.
+     *
+     * @param lowerIndexes the lower indexes of the intervals
+     * @param upperIndexes the upper indexes of the intervals
+     * @param cube the cube
+     * @return the sum of the facts in the given intervals
+     */
     private static double[] getContainedSumNyuszival2(TIntArrayList lowerIndexes, TIntArrayList upperIndexes, ClassicalCube cube) {
         float[][] facts = cube.getCells();
         int numberOfFacts = facts.length;

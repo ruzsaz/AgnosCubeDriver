@@ -23,7 +23,7 @@ public class CountDistinctProblem extends Problem {
 
     public ResultElement compute() {
         if (cachedResult != null) {
-            return new ResultElement(Problem.translateNodes(header), cachedResult);
+            return new ResultElement(cachedResult.getKey(), cachedResult.getValue());
         }
         TIntArrayList[] sourceIntervals = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);
