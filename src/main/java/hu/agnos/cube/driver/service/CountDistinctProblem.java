@@ -6,24 +6,37 @@ import gnu.trove.list.array.TIntArrayList;
 
 import hu.agnos.cube.CountDistinctCube;
 import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.meta.queryDto.CacheKey;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
 /**
  *
  */
-public class CountDistinctProblem extends Problem {
+public final class CountDistinctProblem extends Problem {
 
     protected CountDistinctProblem(CountDistinctCube cube, List<Node> baseVector) {
         super(cube, baseVector);
-        if (cachedResult == null) {
+        setCachedResult(lookupInCache(cube));
+        if (getCachedResult() == null) {
             int numberOfDataRows = cube.getCells().length;
             initForCalculations(numberOfDataRows);
         }
     }
 
+    private ResultElement lookupInCache(CountDistinctCube countDistinctCube) {
+        if (countDistinctCube.getCache() != null) {
+            CacheKey key = CacheKey.fromNodeList(baseVector);
+            int value = countDistinctCube.getCache().get(key);
+            if (value != countDistinctCube.getCache().getNoEntryValue()) {
+                return new ResultElement(Problem.translateNodes(baseVector), new double[]{value});
+            }
+        }
+        return null;
+    }
+
     public ResultElement compute() {
-        if (cachedResult != null) {
-            return new ResultElement(cachedResult.getKey(), cachedResult.getValue());
+        if (getCachedResult() != null) {
+            return getCachedResult();
         }
         TIntArrayList[] sourceIntervals = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);

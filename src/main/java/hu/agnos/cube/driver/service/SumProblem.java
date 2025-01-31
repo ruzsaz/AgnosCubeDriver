@@ -7,25 +7,38 @@ import gnu.trove.list.array.TIntArrayList;
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.ClassicalCube;
 import hu.agnos.cube.dimension.Node;
+import hu.agnos.cube.meta.queryDto.CacheKey;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
 /**
  *
  * @author ruzsaz
  */
-public class SumProblem extends Problem {
+public final class SumProblem extends Problem {
 
     protected SumProblem(ClassicalCube cube, List<Node> baseVector) {
         super(cube, baseVector);
-        if (cachedResult == null) {
+        setCachedResult(lookupInCache(cube));
+        if (getCachedResult() == null) {
             int numberOfDataRows = cube.getCells()[0].length;
             initForCalculations(numberOfDataRows);
         }
     }
 
+    private ResultElement lookupInCache(ClassicalCube classicalCube) {
+        if (classicalCube.getCache() != null) {
+            CacheKey key = CacheKey.fromNodeList(baseVector);
+            double[] value = classicalCube.getCache().get(key);
+            if (value != null) {
+                return new ResultElement(Problem.translateNodes(baseVector), value);
+            }
+        }
+        return null;
+    }
+
     public ResultElement compute() {
-        if (cachedResult != null) {
-            return new ResultElement(cachedResult.getKey(), cachedResult.getValue());
+        if (getCachedResult() != null) {
+            return getCachedResult();
         }
         TIntArrayList[] calculateSumNyuszival2 = getSourceIntervals(offlineCalculatedLowerIndexes, offlineCalculatedUpperIndexes,
                 lowerIndexes, upperIndexes);

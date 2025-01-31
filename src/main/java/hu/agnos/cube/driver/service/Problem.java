@@ -1,12 +1,11 @@
 package hu.agnos.cube.driver.service;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import gnu.trove.list.array.TIntArrayList;
+import lombok.Getter;
+import lombok.Setter;
 
 import hu.agnos.cube.Cube;
 import hu.agnos.cube.dimension.Dimension;
@@ -15,34 +14,36 @@ import hu.agnos.cube.driver.util.IntervalAlgorithms;
 import hu.agnos.cube.driver.util.PostfixCalculator;
 import hu.agnos.cube.measure.AbstractMeasure;
 import hu.agnos.cube.measure.CalculatedMeasure;
-import hu.agnos.cube.meta.queryDto.CacheKey;
+
 import hu.agnos.cube.meta.resultDto.NodeDTO;
 import hu.agnos.cube.meta.resultDto.ResultElement;
 
+/**
+ * Abstract class to represent a problem to solve in the cube. The problem is to answer a single measure-array retrieval
+ * from the cube. The created problem can be either a SumProblem, where data values are determined from the leaf-level
+ * nodes by summary, or a CountDistinctProblem, where the single indicator is the count distinct result of the elements
+ * defined by the value nodes in each dimension.
+ */
 public abstract class Problem {
 
     protected final Cube cube;
-    private final List<Node> baseVector;
+    protected final List<Node> baseVector;
     protected int[][] offlineCalculatedLowerIndexes;
     protected int[][] offlineCalculatedUpperIndexes;
     protected int[][] lowerIndexes;
     protected int[][] upperIndexes;
     protected Node[] header;
     private int numberOfRows; // Number of rows in the cube's dataTable
-    protected Map.Entry<NodeDTO[], double[]> cachedResult;
+
+    @Getter @Setter
+    private ResultElement cachedResult;
 
     protected Problem(Cube cube, List<Node> baseVector) {
         this.cube = cube;
         this.baseVector = baseVector;
-        if (cube.getCache() != null) {
-            double[] value = cube.getCache().get(CacheKey.fromNodeList(baseVector));
-            if (value != null) {
-                this.cachedResult = new AbstractMap.SimpleEntry<>(translateNodes(baseVector), value);
-            }
-        }
     }
 
-    private static NodeDTO[] translateNodes(List<Node> nodes) {
+    static NodeDTO[] translateNodes(List<Node> nodes) {
         int nodeNumber = nodes.size();
         NodeDTO[] result = new NodeDTO[nodeNumber];
         for (int i = 0; i < nodeNumber; i++) {
@@ -230,7 +231,7 @@ public abstract class Problem {
 
     @Override
     public String toString() {
-        return "Problem{" + "baseVector=" + baseVector + '}';
+        return "Problem{" + "baseVector=" + baseVector + "}";
     }
 
 }
