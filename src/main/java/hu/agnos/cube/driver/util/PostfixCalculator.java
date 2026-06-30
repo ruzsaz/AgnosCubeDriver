@@ -75,7 +75,7 @@ public class PostfixCalculator {
                     operand1 = stack.pop();
                     double local;
                     if (operand2 == 0) {
-                        local = 0;
+                        local = (operand1 == 0) ? 1 : 0;
                     } else {
                         local = operand1 / operand2;
                     }
